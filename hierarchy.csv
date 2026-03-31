@@ -1,0 +1,74 @@
+Pessoa,Nome Abreviado,Nome,Departamento (Codigo),Departamento,Polo/Divisao,Sub-divisao (Codigo),Categoria (Descricao),Manager,Nome Manager,Categoria Manager
+675578,Maria Joana Fernandes,Maria Joana Rebelo Dias Fernandes,RSK-CCT,CONDUCT & CONTROL,Analytics,098asdhj7,Team Leader,675613,Sonia Cristina Pacheco Duarte Ribeiro,Management
+675579,Maria Emilia Lino,Maria Emilia Moreira de Freitas Lino,STR-MKT,STRATEGIC MARKETING & COE CX & INNOVATION,,,Expert - Technical Lead,487107,Amelia Luisa Salgado Correia,Management
+548187,Anabela Guerreiro,Anabela Florido Ferreira Guerreiro,FIN-GRF,GRANTING & FINANCING,,,Technician,875688,Maria Joao Silva Correia,Team Leader
+648195,Ana Maria Carvalho,Ana Maria Santos Pereira Oliveira Carvalho,OPS-CCR,CUSTOMER CARE & REBOUND,,,Technician,287899,Joana Rosa Goncalves,Team Leader
+675585,Jose Freitas,Jose Crispin Vieira Freitas,RSK-CCT,CONDUCT & CONTROL,,,Technician,848674,Rosa Feliciana Morgado de Sousa Medeiros,Team Leader
+629263,Maria Leonor Santos,Maria Leonor Loureiro Pimenta Santos,LEG-JRI,JURIDICO E RELACOES INSTITUCIONAIS,,,Executive,9876N5432A,Cage NICOLAS,Executive
+249624,Cecilia Oliveira,Cecilia Maria Matias Oliveira,ITD-CGP,COE IT GOVERNANCE AND PERFORMANCE EXCELLENCE,,,Team Leader,c25483,Jeeli Manogaran,Management
+249614,Maria Alice Monteiro,Maria Alice Pires Monteiro,RSK-REG,RISK GOVERNANCE & REGULATORY,,,Management,838047,Hugo Miguel Lucas Pereira Galinha,Top Management
+249867,Salvador Silva,Salvador Fernando Ferreira da Silva,COM-BKP,BANKING PARTNERSHIPS,,,Management,848198,Ana Paula de Nazare Romba Guerreiro Alcobia,Top Management
+249698,Carlos Manuel Pires,Carlos Manuel Ramos Pires,ITD-SRV,IT SERVICE DELIVERY,,,Expert - Technical Lead,e75286,Diogo Andre da Silva e Sousa,Management
+249699,Cecilia Crespo,Cecilia Cristina Simoes Crespo Lopes,RSK-ANA,RISK ANALYTICS,,,Management,475760,Justino Alicia Jadossone,Executive
+249602,Carlos Margato,Carlos Manuel Antunes Margato,COM-MOB,MOBILITY OEM & TOP DEALERS,,,Expert - Technical Lead,n48224,David Jose Barroso Correia,Management
+443015,Georgette Pinto,Georgette Pinto Ribeiro Pires,COM-RMI,RELATIONAL MARKETING & INSURANCE,,,Management,n40707,Cristela Teresa Rebelo Fernandes,Team Leader
+675587,Luis Mendonca,Luis Alberto Almeida Esteves Mendonca,COM-DRC,STRATEGY & PLANNING DRC,,,Team Leader,n40705,Antonio Paulo Mesquita Junior,Management
+675586,Nuno Miguel Teixeira,Nuno Miguel Saraiva Oliveira Teixeira,COM-MOB,MOBILITY OEM & TOP DEALERS,,,Management,n48224,David Jose Barroso Correia,Management
+249604,Nuno Ribeiro,Nuno Miguel Dias Ribeiro,COM-BRP,BROKER PARTNERSHIPS,,,Expert - Technical Lead,n48225,Fernanda Jose Lourenco Carmona,Management
+249602,Albertino Neves,Albertino Miguel Cardoso das Neves,STR-COO,DIRECCAO COO & TRANSFORMATION,,,Top Management,875696,Joao Paulo Lopes Goncalves,Management
+249594,Nuno Miguel Leganhito,Nuno Miguel Rodrigues Rocer Leganhito,ITD-ODD,TIBRO ODD,,,Expert - Technical Lead,e40723,Joao Elter Coelho de Almeida,Management
+249604,Carla Teresa Ferreira,Carla Teresa Rebelo Ferreira,STR-BRD,D.BRAND COMMUNICATION & OFFER,,,Top Management,249601,Hugo Manuel Marques dos Santos Lousada,Team Leader
+675588,Jose Antonio Rodrigues,Jose Antonio de Azevedo Rodrigues,OPS-COL,OPERATIONAL COLLECTIONS,,,Expert - Technical Lead,875671,Andreia Cristina Carvalho Candeas Teixeira,Team Leader
+675951,Cesar Augusto Martins,Cesar Augusto Carvalhal Martins,OPS-COL,OPERATIONAL COLLECTIONS,,,Expert - Technical Lead,875671,Andreia Cristina Carvalho Candeas Teixeira,Team Leader
+249578,Fernando Castro,Fernando Morato de Castro,OPS-BSP,OPERATIONS & BUSINESS SUPPORT,,,Expert - Technical Lead,875750,Gustavo Gomes Madaleno de Sousa,Top Management
+249513,Artur Baltarejo,Artur Manuel Netto de Sousa Baltarejo,ITD-DAT,COE DATA,,,Expert - Technical Lead,R8628,Gustavo Rodrigues Filipa,Management
+875993,Carla Susana Rocha,Carla Susana Silva Guerra Duarte Alves Rocha,FIN-GRF,GRANTING & FINANCING,,,Expert - Technical Lead,875632,Maria Cristina Simoes Crespo Lopes,Management
+249690,Sofia Costa,Sonia Cristina Grilo Costa,RSK-ANA,RISK ANALYTICS,,,Expert - Technical Lead,249699,Cecilia Cristina Simoes Crespo Lopes,Management
+249529,Ines Carvalhao,Ines Isabel Van Grichen Moreira de Carvalho,STR-SYN,GROUP SYNERGIES,,,Management,443558,Ana Rita Salgado Alves,Management
+675555,Isabel Cristina Fernandes,Isabel Cristina Baptista Fernandes,COM-STF,STOCK FINANCING,,,Expert - Technical Lead,e77882,Joao Manuel Guerreiro Gomes de Sousa,Team Leader
+675568,Jorge Manuel Romildo,Jorge Manuel Malheiro Romildo,FIN-GRF,GRANTING & FINANCING,,,Team Leader,87563,Maria Cristina Pinto Henriques,Management
+249687,Ana Barros Pinto,Ana Cristina Nunes de Barros Pinto,STR-AGI,TRANSFORMATION & COE AGILE,,,Expert - Technical Lead,443548,Ana Rita Salgado Alves,Management
+675595,Paulo Alves Rilgo,Paulo Marques de Machado Alves Rilgo,OPS-CCR,CUSTOMER CARE & REBOUND,,,Technician,287675,Carla Patricia Salgado Dias,Team Leader
+675597,Beatriz Carneiro Soares,Beatriz Maria Carneiro Soares das Neves,OPS-CCR,CUSTOMER CARE & REBOUND,,,Technician,287899,Joana Rosa Goncalves,Team Leader
+675598,Claudia Maria Sereno,Claudia Maria Almeida Lopes Sereno,OPS-CCR,CUSTOMER CARE & REBOUND,,,Technician,18199,Joana Rosa Goncalves,Team Leader
+249619,Sofia Morgado,Sofia Isabel Gervosio Virginia C. Morgado,FIN-CTB,CONTABILIDADE E TESOURARIA,,,Expert - Technical Lead,929912,Elisabete Jorge Braz,Team Leader
+675599,Maria Eugenia Carneiro,Maria Eugenia Cardoso Pinto Carneiro,OPS-COL,OPERATIONAL COLLECTIONS,,,Technician,675206,Pedro Miguel Gama da Franco Monteriro,Team Leader
+675603,Raquel Couto,Raquel Sofia Ruas Abrantes Ribeiro Couto Mendes,LEG-JUR,JURIDICO,,,Technician,BRG008,Miguel Angelo Reis Oliveira,Management
+9876N5432A,Cage Nicolas,Cage NICOLAS,CEO-GOV,CEO OFFICE,,,Executive,,,
+475760,Justino Jadossone,Justino Alicia Jadossone,RSK-GOV,RISK & COMPLIANCE,,,Executive,9876N5432A,Cage NICOLAS,Executive
+838047,Hugo Galinha,Hugo Miguel Lucas Pereira Galinha,RSK-REG,RISK GOVERNANCE & REGULATORY,,,Top Management,475760,Justino Alicia Jadossone,Executive
+675613,Sonia Ribeiro,Sonia Cristina Pacheco Duarte Ribeiro,RSK-CCT,CONDUCT & CONTROL,,,Management,838047,Hugo Miguel Lucas Pereira Galinha,Top Management
+848674,Rosa Medeiros,Rosa Feliciana Morgado de Sousa Medeiros,RSK-CCT,CONDUCT & CONTROL,,,Team Leader,675613,Sonia Cristina Pacheco Duarte Ribeiro,Management
+848198,Ana Paula Alcobia,Ana Paula de Nazare Romba Guerreiro Alcobia,COM-BKP,BANKING PARTNERSHIPS,,,Top Management,BRG001,Joao Pedro Martins Almeida,Executive
+n48224,David Correia,David Jose Barroso Correia,COM-MOB,MOBILITY OEM & TOP DEALERS,,,Management,848198,Ana Paula de Nazare Romba Guerreiro Alcobia,Top Management
+n48225,Fernanda Carmona,Fernanda Jose Lourenco Carmona,COM-BRP,BROKER PARTNERSHIPS,,,Management,848198,Ana Paula de Nazare Romba Guerreiro Alcobia,Top Management
+n40705,Antonio Mesquita,Antonio Paulo Mesquita Junior,COM-DRC,STRATEGY & PLANNING DRC,,,Management,848198,Ana Paula de Nazare Romba Guerreiro Alcobia,Top Management
+e77882,Joao Gomes de Sousa,Joao Manuel Guerreiro Gomes de Sousa,COM-STF,STOCK FINANCING,,,Team Leader,n48225,Fernanda Jose Lourenco Carmona,Management
+n40707,Cristela Fernandes,Cristela Teresa Rebelo Fernandes,COM-RMI,RELATIONAL MARKETING & INSURANCE,,,Team Leader,848198,Ana Paula de Nazare Romba Guerreiro Alcobia,Top Management
+875750,Gustavo Madaleno,Gustavo Gomes Madaleno de Sousa,OPS-BSP,OPERATIONS & BUSINESS SUPPORT,,,Top Management,BRG002,Ana Sofia Pereira Gomes,Executive
+875671,Andreia Teixeira,Andreia Cristina Carvalho Candeas Teixeira,OPS-COL,OPERATIONAL COLLECTIONS,,,Team Leader,BRG007,Claudia Sofia Santos Pereira,Management
+675206,Pedro Monteriro,Pedro Miguel Gama da Franco Monteriro,OPS-COL,OPERATIONAL COLLECTIONS,,,Team Leader,BRG007,Claudia Sofia Santos Pereira,Management
+287899,Joana Rosa Goncalves,Joana Rosa Goncalves,OPS-CCR,CUSTOMER CARE & REBOUND,,,Team Leader,BRG007,Claudia Sofia Santos Pereira,Management
+18199,Joana Rosa Goncalves,Joana Rosa Goncalves,OPS-CCR,CUSTOMER CARE & REBOUND,,,Team Leader,BRG007,Claudia Sofia Santos Pereira,Management
+287675,Carla Salgado Dias,Carla Patricia Salgado Dias,OPS-CCR,CUSTOMER CARE & REBOUND,,,Team Leader,BRG007,Claudia Sofia Santos Pereira,Management
+c25483,Jeeli Manogaran,Jeeli Manogaran,ITD-CGP,COE IT GOVERNANCE AND PERFORMANCE EXCELLENCE,,,Management,BRG006,Paulo Ricardo Ferreira Lima,Top Management
+e75286,Diogo Sousa,Diogo Andre da Silva e Sousa,ITD-SRV,IT SERVICE DELIVERY,,,Management,BRG006,Paulo Ricardo Ferreira Lima,Top Management
+e40723,Joao Elter Almeida,Joao Elter Coelho de Almeida,ITD-ODD,TIBRO ODD,,,Management,BRG006,Paulo Ricardo Ferreira Lima,Top Management
+R8628,Gustavo Rodrigues,Gustavo Rodrigues Filipa,ITD-DAT,COE DATA,,,Management,BRG006,Paulo Ricardo Ferreira Lima,Top Management
+875632,Maria Cristina Lopes,Maria Cristina Simoes Crespo Lopes,FIN-GRF,GRANTING & FINANCING,,,Management,BRG004,Teresa Cristina Soares Ribeiro,Executive
+87563,Maria Cristina Henriques,Maria Cristina Pinto Henriques,FIN-GRF,GRANTING & FINANCING,,,Management,BRG004,Teresa Cristina Soares Ribeiro,Executive
+875688,Maria Joao Correia,Maria Joao Silva Correia,FIN-GRF,GRANTING & FINANCING,,,Team Leader,875632,Maria Cristina Simoes Crespo Lopes,Management
+929912,Elisabete Braz,Elisabete Jorge Braz,FIN-CTB,CONTABILIDADE E TESOURARIA,,,Team Leader,BRG004,Teresa Cristina Soares Ribeiro,Executive
+487107,Amelia Correia,Amelia Luisa Salgado Correia,STR-MKT,STRATEGIC MARKETING & COE CX & INNOVATION,,,Management,BRG005,Manuel Pedro Costa Rodrigues,Executive
+443558,Ana Rita Alves,Ana Rita Salgado Alves,STR-SYN,GROUP SYNERGIES,,,Management,BRG005,Manuel Pedro Costa Rodrigues,Executive
+443548,Ana Rita Alves,Ana Rita Salgado Alves,STR-AGI,TRANSFORMATION & COE AGILE,,,Management,BRG005,Manuel Pedro Costa Rodrigues,Executive
+875696,Joao Paulo Goncalves,Joao Paulo Lopes Goncalves,STR-COO,DIRECCAO COO & TRANSFORMATION,,,Management,BRG005,Manuel Pedro Costa Rodrigues,Executive
+249601,Hugo Lousada,Hugo Manuel Marques dos Santos Lousada,STR-BRD,D.BRAND COMMUNICATION & OFFER,,,Team Leader,487107,Amelia Luisa Salgado Correia,Management
+BRG001,Joao Pedro Almeida,Joao Pedro Martins Almeida,COM-GOV,COMMERCIAL,,,Executive,9876N5432A,Cage NICOLAS,Executive
+BRG002,Ana Sofia Gomes,Ana Sofia Pereira Gomes,OPS-GOV,OPERATIONS,,,Executive,9876N5432A,Cage NICOLAS,Executive
+BRG003,Ricardo Teixeira Santos,Ricardo Miguel Teixeira Santos,ITD-GOV,IT & DIGITAL,,,Executive,9876N5432A,Cage NICOLAS,Executive
+BRG004,Teresa Soares Ribeiro,Teresa Cristina Soares Ribeiro,FIN-GOV,FINANCE,,,Executive,9876N5432A,Cage NICOLAS,Executive
+BRG005,Manuel Costa Rodrigues,Manuel Pedro Costa Rodrigues,STR-GOV,STRATEGY & TRANSFORMATION,,,Executive,9876N5432A,Cage NICOLAS,Executive
+BRG006,Paulo Ferreira Lima,Paulo Ricardo Ferreira Lima,ITD-GOV,IT & DIGITAL,,,Top Management,BRG003,Ricardo Miguel Teixeira Santos,Executive
+BRG007,Claudia Santos Pereira,Claudia Sofia Santos Pereira,OPS-GOV,OPERATIONS,,,Management,875750,Gustavo Gomes Madaleno de Sousa,Top Management
+BRG008,Miguel Reis Oliveira,Miguel Angelo Reis Oliveira,LEG-JUR,JURIDICO,,,Management,629263,Maria Leonor Loureiro Pimenta Santos,Executive

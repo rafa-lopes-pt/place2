@@ -1,0 +1,1999 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Place — Plataforma de PDCAs · Cetelem Portugal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ── Variables ── */
+:root {
+  --green: #9ac433;
+  --green-hover: #7da829;
+  --green-light: rgba(154,196,51,0.08);
+  --dark: #2d3436;
+  --bg: #f9fafb;
+  --surface: #ffffff;
+  --border: #e5e7eb;
+  --text: #2d3436;
+  --text-sec: #6b7280;
+  --text-muted: #9ca3af;
+  --red: #ef4444;
+  --red-light: #fef2f2;
+  --font: 'Outfit', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+button { font-family: var(--font); cursor: pointer; }
+input, select, textarea { font-family: var(--font); }
+ul { list-style: none; }
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
+
+/* ── Header ── */
+.header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: 56px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 32px;
+}
+.h-left { display: flex; align-items: center; gap: 12px; }
+.logo { font-size: 20px; font-weight: 800; color: var(--green); letter-spacing: -0.5px; }
+.logo-sub { font-size: 12px; color: var(--text-muted); font-weight: 400; }
+.h-right { display: flex; align-items: center; gap: 14px; }
+.btn-nova {
+  border-radius: 3px; padding: 8px 18px; font-size: 14px;
+  background: var(--green); color: #fff; border: none;
+  transition: all 200ms linear; font-weight: 600;
+}
+.btn-nova:hover { background: var(--green-hover); }
+.user-name { font-size: 13px; font-weight: 500; color: var(--text); }
+.user-role { font-size: 11px; color: var(--text-muted); }
+
+/* ── Tabs ── */
+.tabs {
+  position: fixed; top: 56px; left: 0; right: 0; z-index: 99;
+  height: 50px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: stretch; justify-content: center;
+  padding: 0 16px; gap: 4px;
+}
+.tab {
+  flex: 1; max-width: 180px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 600;
+  color: #fff;
+  border: none; position: relative; transition: all 0.2s;
+  text-transform: uppercase; letter-spacing: 0.4px;
+  margin: 6px 0;
+  border-radius: 4px;
+}
+.tab { opacity: 0.5; }
+.tab:hover { opacity: 0.75; }
+.tab.active { opacity: 1; box-shadow: 0 2px 10px rgba(0,0,0,0.25); transform: translateY(-2px) scale(1.04); }
+
+/* Cores diferenciadas por tab — tons verdes/naturais, sem arco-íris */
+.tab[data-tab="inicio"]     { background: #9ac433; }
+.tab[data-tab="instrucoes"]  { background: #7da829; }
+.tab[data-tab="pessoal"]     { background: #6b9a3a; }
+.tab[data-tab="mentoria"]    { background: #5a8a4a; }
+.tab[data-tab="gestor"]      { background: #4a7a5a; }
+.tab[data-tab="catalogo"]    { background: #3d6b52; }
+.tab[data-tab="dashboard"]    { background: #3a6060; }
+.tab[data-tab="admin"]       { background: #536069; }
+
+.tab-count {
+  font-family: var(--mono); font-size: 9px; font-weight: 700;
+  background: #fff; color: #3d6b52;
+  padding: 1px 5px; border-radius: 8px; margin-left: 5px;
+}
+
+/* ── Main ── */
+.main { margin-top: 104px; padding: 32px; max-width: 1100px; margin-left: auto; margin-right: auto; }
+.page { display: none; }
+.page.active { display: block; animation: fadeIn 0.2s ease; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* ── CTA Banner ── */
+.cta {
+  margin-bottom: 36px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--border);
+}
+.cta-text h2 { font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.cta-text p { font-size: 14px; color: var(--text-sec); }
+.cta .btn-nova { padding: 10px 24px; font-size: 15px; }
+
+/* ── KPI Row ── */
+.kpi-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 40px; }
+.kpi {
+  background: var(--surface); border: 2px solid var(--border); border-radius: 6px;
+  padding: 20px 22px; transition: border-color 0.2s;
+}
+.kpi:hover { border-color: var(--green); }
+.kpi-label { font-size: 12px; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 6px; }
+.kpi-val { font-size: 28px; font-weight: 800; color: var(--text); line-height: 1; }
+.kpi-val.green { color: var(--green); }
+
+/* ── Section Title ── */
+.sec-title {
+  font-size: 15px; font-weight: 700; color: var(--text);
+  margin-bottom: 16px; padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── Simple Cards ── */
+.card-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 36px; }
+.card {
+  background: var(--surface); border: 2px solid var(--border); border-radius: 6px;
+  padding: 20px; cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s;
+}
+.card:hover { border-color: var(--green); box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+.card h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.card p { font-size: 12px; color: var(--text-sec); }
+
+/* ── Notification List ── */
+.notif-list { margin-bottom: 36px; }
+.notif-item { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: flex-start; }
+.notif-item:last-child { border-bottom: none; }
+.notif-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); margin-top: 7px; flex-shrink: 0; }
+.notif-text { font-size: 13px; color: var(--text); }
+.notif-time { font-size: 11px; color: var(--text-muted); }
+
+/* ── Mentor Contact ── */
+.mentor-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.mentor-row:last-child { border-bottom: none; }
+.mentor-av { width: 32px; height: 32px; border-radius: 50%; background: var(--green); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff; flex-shrink: 0; }
+.mentor-name { font-size: 13px; font-weight: 600; }
+.mentor-role { font-size: 11px; color: var(--text-muted); }
+
+/* ── Process Flow ── */
+.flow { display: flex; align-items: flex-start; gap: 0; margin: 20px 0 40px; flex-wrap: wrap; justify-content: center; }
+.flow-step { display: flex; flex-direction: column; align-items: center; min-width: 120px; text-align: center; }
+.flow-num { width: 38px; height: 38px; border-radius: 50%; background: var(--green); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+.flow-step h4 { font-size: 12px; font-weight: 600; }
+.flow-step p { font-size: 11px; color: var(--text-sec); max-width: 100px; }
+.flow-arrow { color: var(--text-muted); font-size: 18px; margin-top: 10px; padding: 0 6px; }
+
+/* ── FAQ ── */
+.faq { margin-bottom: 36px; }
+.faq-item { border-bottom: 2px solid var(--border); }
+.faq-q { padding: 14px 0; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 14px; font-weight: 500; }
+.faq-toggle { font-size: 18px; color: var(--text-muted); transition: transform 0.2s; }
+.faq-a { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+.faq-item.open .faq-a { max-height: 500px; }
+.faq-item.open .faq-toggle { transform: rotate(45deg); color: var(--green); }
+.faq-a p { padding: 0 0 14px; font-size: 13px; color: var(--text-sec); line-height: 1.7; }
+
+/* ── Section Label (Pessoal split) ── */
+.split-label {
+  font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px;
+  color: var(--green); margin-bottom: 14px;
+  display: flex; align-items: center; gap: 6px;
+}
+.split-label::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+.split-label.muted { color: var(--text-muted); }
+.split-label.muted::before { background: var(--text-muted); }
+
+.split-divider { margin: 32px 0; border: none; height: 1px; background: var(--border); }
+
+/* ── Filter Bar ── */
+.filters {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.filters select, .filters input[type="text"] {
+  font-size: 12px; padding: 6px 10px; border: 1px solid var(--border);
+  border-radius: 3px; background: var(--surface); color: var(--text);
+  outline: none; min-width: 130px;
+}
+.filters input[type="text"] { flex: 1; min-width: 160px; }
+.filters select:focus, .filters input:focus { border-color: var(--green); }
+.btn-clear { font-size: 12px; color: var(--text-muted); background: none; border: none; padding: 6px 8px; }
+.btn-clear:hover { color: var(--text); }
+.filter-count { font-family: var(--mono); font-size: 11px; color: var(--text-muted); margin-left: auto; }
+
+/* ── Pending Item (simple list-style for mentoria/gestor) ── */
+.pending-list { margin-bottom: 32px; }
+.pending-item {
+  display: flex; align-items: center; gap: 16px;
+  padding: 14px 16px; background: var(--surface);
+  border: 2px solid var(--border); border-radius: 6px;
+  margin-bottom: 8px; cursor: pointer; transition: border-color 0.15s;
+}
+.pending-item:hover { border-color: var(--green); }
+.pending-item.urgent { border-left: 3px solid var(--red); }
+.pi-body { flex: 1; min-width: 0; }
+.pi-code { font-family: var(--mono); font-size: 12px; font-weight: 500; color: var(--green); }
+.pi-title { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pi-meta { font-size: 11px; color: var(--text-muted); }
+.pi-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.pi-days { font-family: var(--mono); font-size: 11px; font-weight: 500; }
+.pi-days.late { color: var(--red); }
+.pi-value { font-family: var(--mono); font-size: 14px; font-weight: 600; color: var(--green); }
+
+.btn-sm {
+  border-radius: 3px; padding: 6px 14px; font-size: 12px; font-weight: 600;
+  background: var(--green); color: #fff; border: none; transition: all 200ms linear;
+}
+.btn-sm:hover { background: var(--green-hover); }
+.btn-outline {
+  border-radius: 3px; padding: 8px 16px; font-size: 13px; font-weight: 500;
+  background: var(--surface); color: var(--text-sec); border: 2px solid var(--border);
+  transition: all 200ms linear; font-family: var(--font);
+}
+.btn-outline:hover { border-color: var(--green); color: var(--green); }
+
+/* ── Table ── */
+.tbl-wrap {
+  background: var(--surface); border: 2px solid var(--border); border-radius: 6px;
+  overflow: hidden; margin-bottom: 32px;
+}
+.tbl-scroll { overflow-x: auto; max-height: 460px; overflow-y: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead { position: sticky; top: 0; z-index: 2; }
+thead tr { background: var(--bg); }
+th { padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+tbody tr { cursor: pointer; transition: background 0.1s; }
+tbody tr:hover { background: var(--green-light); }
+tbody tr:last-child td { border-bottom: none; }
+.col-code { font-family: var(--mono); font-weight: 500; color: var(--green); font-size: 12px; white-space: nowrap; }
+.col-title { font-weight: 500; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.col-val { font-family: var(--mono); font-weight: 500; white-space: nowrap; }
+.col-date { font-size: 12px; color: var(--text-sec); white-space: nowrap; }
+
+/* ── Chips (minimal) ── */
+.chip { font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 3px; white-space: nowrap; }
+.chip-active { background: var(--green-light); color: var(--green-hover); }
+.chip-pending { background: #fef3c7; color: #92400e; }
+.chip-done { background: #d1fae5; color: #065f46; }
+.chip-inactive { background: #f3f4f6; color: #6b7280; }
+.chip-revision { background: #fef2f2; color: #dc2626; }
+
+.tbl-footer { padding: 8px 14px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); }
+.tbl-footer span { font-size: 11px; color: var(--text-muted); }
+
+/* ── Toggle ── */
+.toggle { display: inline-flex; border: 1px solid var(--border); border-radius: 3px; overflow: hidden; margin-right: 10px; }
+.toggle-btn { padding: 6px 16px; font-size: 12px; font-weight: 500; border: none; background: none; color: var(--text-sec); transition: all 0.15s; }
+.toggle-btn.active { background: var(--green); color: #fff; }
+
+/* ── Side Panel ── */
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.25); z-index: 200; opacity: 0; visibility: hidden; transition: all 0.2s; }
+.overlay.open { opacity: 1; visibility: visible; }
+.panel { position: fixed; top: 0; right: 0; width: 540px; max-width: 95vw; height: 100%; background: var(--surface); z-index: 201; display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.25s ease; box-shadow: -4px 0 16px rgba(0,0,0,0.08); }
+.panel.open { transform: translateX(0); }
+
+.pn-head { padding: 20px 24px 16px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.pn-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.pn-code { font-family: var(--mono); font-size: 12px; font-weight: 500; color: var(--green); }
+.pn-close { background: none; border: none; font-size: 20px; color: var(--text-muted); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 3px; }
+.pn-close:hover { background: var(--bg); }
+.pn-title { font-size: 16px; font-weight: 600; line-height: 1.3; margin-bottom: 8px; }
+.pn-chips { display: flex; gap: 6px; }
+
+.pn-body { flex: 1; overflow-y: auto; padding: 20px 24px; }
+.pn-sec { margin-bottom: 24px; }
+.pn-sec-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 10px; }
+
+.pn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.pn-field-label { font-size: 11px; color: var(--text-muted); margin-bottom: 2px; }
+.pn-field-val { font-size: 13px; font-weight: 500; }
+.pn-desc { font-size: 13px; color: var(--text-sec); line-height: 1.6; margin-bottom: 8px; }
+
+.pn-savings { padding: 12px; background: var(--green-light); border-radius: 6px; margin-bottom: 8px; }
+.pn-sav-val { font-family: var(--mono); font-size: 22px; font-weight: 700; color: var(--green-hover); }
+.pn-sav-type { font-size: 12px; color: var(--text-sec); }
+.pn-sav-note { font-size: 12px; color: var(--text-sec); font-style: italic; margin-top: 6px; }
+
+/* Timeline */
+.timeline { padding-left: 14px; position: relative; }
+.timeline::before { content: ''; position: absolute; left: 5px; top: 6px; bottom: 6px; width: 1px; background: var(--border); }
+.tl-item { position: relative; padding-left: 20px; padding-bottom: 14px; }
+.tl-item:last-child { padding-bottom: 0; }
+.tl-dot { position: absolute; left: -2px; top: 4px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--border); background: var(--surface); }
+.tl-dot.done { background: var(--green); border-color: var(--green); }
+.tl-dot.active { background: var(--green); border-color: var(--green); box-shadow: 0 0 0 3px var(--green-light); }
+.tl-label { font-size: 13px; font-weight: 500; }
+.tl-meta { font-size: 11px; color: var(--text-muted); }
+
+/* Comments */
+.comment { display: flex; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.comment:last-of-type { border-bottom: none; }
+.comment-av { width: 26px; height: 26px; border-radius: 50%; background: var(--text-muted); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: #fff; flex-shrink: 0; }
+.comment-author { font-size: 12px; font-weight: 600; }
+.comment-date { font-size: 10px; color: var(--text-muted); margin-left: 6px; }
+.comment-text { font-size: 12px; color: var(--text-sec); margin-top: 2px; }
+.comment-input { display: flex; gap: 6px; margin-top: 10px; }
+.comment-input input { flex: 1; font-size: 12px; padding: 7px 10px; border: 1px solid var(--border); border-radius: 3px; outline: none; }
+.comment-input input:focus { border-color: var(--green); }
+.comment-input button { padding: 7px 14px; }
+.mention { color: var(--green-hover); font-weight: 600; cursor: pointer; }
+.mention:hover { text-decoration: underline; }
+.comment-conf { background: #f8f5ff; border-left: 3px solid #7c3aed; padding: 8px 10px; border-radius: 4px; margin-bottom: 4px; }
+.comment-conf-label { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #7c3aed; display: flex; align-items: center; gap: 4px; margin-bottom: 4px; }
+.comment-conf-label::before { content: '🔒'; font-size: 10px; }
+.comment-input-row { display: flex; gap: 6px; margin-top: 10px; align-items: center; }
+.comment-input-row input { flex: 1; font-size: 12px; padding: 7px 10px; border: 1px solid var(--border); border-radius: 3px; outline: none; }
+.comment-input-row input:focus { border-color: var(--green); }
+.comment-conf-toggle { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; cursor: pointer; white-space: nowrap; }
+.comment-conf-toggle input { accent-color: #7c3aed; }
+.comment-vis-select { font-size: 11px; padding: 4px 8px; border: 1px solid #d8b4fe; border-radius: 3px; color: #7c3aed; background: #f8f5ff; }
+
+.pn-foot { padding: 14px 24px; border-top: 1px solid var(--border); display: flex; gap: 8px; flex-shrink: 0; flex-wrap: wrap; align-items: center; }
+.pn-more { position: relative; }
+.pn-more-btn {
+  border-radius: 3px; padding: 8px 14px; font-size: 13px; font-weight: 500;
+  background: var(--surface); color: var(--text-sec); border: 1px solid var(--border);
+  cursor: pointer; transition: all 200ms linear; display: flex; align-items: center; gap: 4px;
+}
+.pn-more-btn:hover { border-color: var(--green); color: var(--green); }
+.pn-more-btn::after { content: '\25BE'; font-size: 10px; }
+.pn-dropdown {
+  position: absolute; bottom: 100%; right: 0; margin-bottom: 4px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.10); min-width: 180px; z-index: 10;
+  display: none;
+}
+.pn-more.open .pn-dropdown { display: block; }
+.pn-drop-item {
+  display: block; width: 100%; text-align: left; padding: 9px 14px;
+  font-size: 12px; font-weight: 500; color: var(--text); background: none;
+  border: none; cursor: pointer; transition: background 0.1s;
+}
+.pn-drop-item:hover { background: var(--green-light); color: var(--green-hover); }
+.pn-drop-item:not(:last-child) { border-bottom: 1px solid var(--border); }
+
+/* ── Modal ── */
+.modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 300; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: all 0.2s; }
+.modal-bg.open { opacity: 1; visibility: visible; }
+.modal { background: var(--surface); border-radius: 6px; width: 100%; max-width: 560px; max-height: 85vh; display: flex; flex-direction: column; box-shadow: 0 8px 30px rgba(0,0,0,0.12); }
+.modal-head { padding: 20px 24px 14px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.modal-head h2 { font-size: 16px; font-weight: 700; }
+.modal-body { padding: 20px 24px; overflow-y: auto; flex: 1; }
+.form-group { margin-bottom: 14px; }
+.form-label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+.form-label .req { color: var(--red); }
+.form-input, .form-select, .form-textarea { width: 100%; font-size: 13px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 3px; outline: none; background: var(--surface); color: var(--text); }
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--green); }
+.form-textarea { resize: vertical; min-height: 60px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-check { display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; }
+.form-check input { accent-color: var(--green); }
+.hidden { display: none !important; }
+.modal-foot { padding: 14px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
+.btn-ghost { background: none; border: none; color: var(--text-sec); padding: 8px 14px; font-size: 13px; font-weight: 500; }
+.btn-ghost:hover { color: var(--text); }
+.btn-secondary { background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 8px 18px; font-size: 13px; font-weight: 500; border-radius: 3px; transition: all 200ms linear; }
+.btn-secondary:hover { border-color: var(--green); }
+.btn-danger {
+  border-radius: 3px; padding: 8px 16px; font-size: 13px; font-weight: 500;
+  background: var(--surface); color: var(--red); border: 2px solid #fca5a5;
+  transition: all 200ms linear; font-family: var(--font);
+}
+.btn-danger:hover { background: #fef2f2; }
+
+/* ── Hero Welcome ── */
+.hero-welcome {
+  background: linear-gradient(135deg, #f0f7e6 0%, #e8f5d6 50%, #f9fafb 100%);
+  border: 2px solid #d4e8b0;
+  border-radius: 10px;
+  padding: 48px 40px;
+  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+}
+.hero-content { max-width: 520px; }
+.hero-badge {
+  font-size: 11px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 1px; color: var(--green-hover); margin-bottom: 12px;
+}
+.hero-welcome h1 {
+  font-size: 32px; font-weight: 800; color: var(--dark);
+  margin-bottom: 10px; letter-spacing: -0.5px;
+}
+.hero-welcome p {
+  font-size: 15px; color: var(--text-sec); line-height: 1.6; margin-bottom: 20px;
+}
+.hero-actions { display: flex; gap: 12px; align-items: center; }
+.btn-outline-hero {
+  border-radius: 3px; padding: 10px 20px; font-size: 14px; font-weight: 600;
+  background: transparent; color: var(--green-hover);
+  border: 2px solid var(--green); transition: all 200ms linear; cursor: pointer;
+  font-family: var(--font);
+}
+.btn-outline-hero:hover { background: var(--green); color: #fff; }
+
+/* PDCA Wheel */
+.pdca-wheel {
+  width: 180px; height: 180px; position: relative; flex-shrink: 0;
+}
+.pdca-seg {
+  position: absolute; width: 78px; height: 78px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; font-weight: 800; color: white; border-radius: 10px;
+  transition: transform 0.3s ease;
+}
+.pdca-seg:hover { transform: scale(1.08); }
+.seg-p { top: 0; left: 0; background: #9ac433; }
+.seg-d { top: 0; right: 0; background: #85b329; }
+.seg-c { bottom: 0; right: 0; background: #6d9420; }
+.seg-a { bottom: 0; left: 0; background: #8bbd2a; }
+.pdca-center {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 56px; height: 56px; background: white; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 800; color: var(--green-hover);
+  letter-spacing: 1px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.hero-visual { flex-shrink: 0; }
+
+/* Validation columns */
+.validation-col {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  padding: 20px;
+}
+.validation-col .sec-title { margin-top: 0; }
+.validation-col .pending-list { margin-bottom: 0; }
+.val-proj { border-top: 3px solid var(--green); }
+.val-sav { border-top: 3px solid #e8960c; }
+.val-sav .sec-title { color: #b07209; }
+
+/* My row highlight */
+.my-row { border-left: 3px solid var(--green); }
+
+/* Confidential chip */
+.chip-conf { background: #374151; color: #f9fafb; font-size: 10px; padding: 2px 8px; border-radius: 3px; }
+
+/* ── Instruções — Guia Interactivo ── */
+.profile-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 40px; }
+.profile-card {
+  background: var(--surface); border: 2px solid var(--border); border-radius: 6px;
+  padding: 24px; cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s;
+}
+.profile-card:hover { border-color: var(--green); box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+.profile-card.expanded { border-color: var(--green); }
+.pc-header { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+.pc-icon {
+  width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+.pc-icon.colab { background: #9ac433; }
+.pc-icon.mentor { background: #5a8a4a; }
+.pc-icon.gestor { background: #4a7a5a; }
+.pc-title { font-size: 15px; font-weight: 700; }
+.pc-subtitle { font-size: 12px; color: var(--text-sec); margin-bottom: 0; }
+.pc-body {
+  max-height: 0; overflow: hidden; transition: max-height 0.35s ease, margin 0.35s ease;
+  margin-top: 0;
+}
+.profile-card.expanded .pc-body { max-height: 400px; margin-top: 16px; }
+.pc-body ul { padding-left: 16px; list-style: disc; }
+.pc-body li { font-size: 13px; color: var(--text-sec); line-height: 1.8; }
+.pc-body li strong { color: var(--text); font-weight: 600; }
+/* Action Guide Cards */
+.action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 40px; align-items: start; }
+.action-card {
+  background: var(--surface); border: 2px solid var(--border); border-radius: 6px;
+  overflow: hidden; transition: border-color 0.2s;
+}
+.action-card:hover { border-color: var(--green); }
+.action-card.open { border-color: var(--green); }
+.ac-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 20px; cursor: pointer; user-select: none;
+}
+.ac-icon {
+  width: 32px; height: 32px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; flex-shrink: 0; color: #fff;
+}
+.ac-header-text { flex: 1; }
+.ac-title { font-size: 14px; font-weight: 600; }
+.ac-who { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; margin-top: 1px; }
+.ac-toggle { font-size: 18px; color: var(--text-muted); transition: transform 0.2s; flex-shrink: 0; width: 20px; text-align: center; }
+.action-card.open .ac-toggle { transform: rotate(45deg); color: var(--green); }
+.ac-body { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; }
+.action-card.open .ac-body { max-height: 600px; }
+.ac-body-inner { padding: 0 20px 20px; }
+.ac-steps { counter-reset: step; }
+.ac-step { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.ac-step:last-child { border-bottom: none; }
+.ac-step-num {
+  counter-increment: step; width: 24px; height: 24px; border-radius: 50%;
+  background: var(--green-light); color: var(--green-hover);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px;
+}
+.ac-step-num::before { content: counter(step); }
+.ac-step-text { font-size: 13px; color: var(--text-sec); line-height: 1.6; }
+.ac-step-text strong { color: var(--text); font-weight: 600; }
+.ui-hint {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: var(--mono); font-size: 11px; font-weight: 500;
+  background: var(--green-light); color: var(--green-hover);
+  padding: 2px 8px; border-radius: 3px; white-space: nowrap;
+}
+.ui-hint.danger { background: #fef2f2; color: var(--red); }
+.ui-hint.neutral { background: #f3f4f6; color: var(--text-sec); }
+.ac-tip {
+  margin-top: 10px; padding: 10px 12px;
+  background: var(--green-light); border-radius: 4px;
+  font-size: 12px; color: var(--text-sec); line-height: 1.5;
+}
+.ac-tip strong { color: var(--green-hover); }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .header { padding: 0 16px; }
+  .main { padding: 20px; }
+  .kpi-row { grid-template-columns: 1fr; }
+  .card-row { grid-template-columns: 1fr; }
+  .panel { width: 100%; }
+  .form-row { grid-template-columns: 1fr; }
+  .cta { flex-direction: column; align-items: flex-start; gap: 12px; }
+  #mPending, #myActions, #gPending { grid-template-columns: 1fr !important; }
+  .hero-welcome { flex-direction: column; padding: 32px 24px; text-align: center; }
+  .hero-actions { justify-content: center; flex-wrap: wrap; }
+  .pdca-wheel { width: 140px; height: 140px; }
+  .pdca-seg { width: 60px; height: 60px; font-size: 18px; }
+  .pdca-center { width: 44px; height: 44px; font-size: 9px; }
+  .profile-cards { grid-template-columns: 1fr; }
+  .action-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Dashboard ── */
+.kpi-row-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 40px; }
+.team-row { cursor: default; }
+.team-row td:first-child { font-weight: 600; cursor: pointer; }
+.team-row td:first-child:hover { color: var(--green-hover); }
+.team-toggle { display: inline-flex; align-items: center; gap: 6px; }
+.team-toggle::before { content: '\25B8'; font-size: 10px; color: var(--text-muted); transition: transform 0.2s; }
+.team-row.expanded .team-toggle::before { transform: rotate(90deg); }
+.drill-row { background: #f5f6f7; }
+.drill-row td:first-child { padding-left: 36px; font-weight: 400; color: var(--text-sec); }
+.drill-row td { font-size: 12px; }
+.totals-row td { font-weight: 700; border-top: 2px solid var(--border); }
+.metric-val { font-family: var(--mono); font-size: 13px; text-align: center; border-radius: 3px; transition: all 0.15s; }
+.metric-val.clickable { cursor: pointer; }
+.metric-val.clickable:hover { outline: 2px solid var(--green); outline-offset: -2px; }
+.metric-header { text-align: center !important; }
+
+/* Heat map */
+.heat-0 { background: transparent; }
+.heat-1 { background: rgba(154,196,51,0.10); }
+.heat-2 { background: rgba(154,196,51,0.20); }
+.heat-3 { background: rgba(154,196,51,0.32); }
+.heat-4 { background: rgba(154,196,51,0.45); }
+.heat-5 { background: rgba(154,196,51,0.58); color: #2d3436; }
+
+/* Drill-down initiative list */
+.drill-inits { margin: 0; }
+.drill-inits td { padding: 0 !important; }
+.drill-inits-inner { padding: 12px 20px 16px 36px; }
+.drill-init-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 12px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 4px;
+  margin-bottom: 6px; cursor: pointer; transition: border-color 0.15s;
+}
+.drill-init-item:last-child { margin-bottom: 0; }
+.drill-init-item:hover { border-color: var(--green); }
+.drill-init-code { font-family: var(--mono); font-size: 11px; font-weight: 500; color: var(--green); white-space: nowrap; }
+.drill-init-title { font-size: 12px; font-weight: 500; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.drill-init-colab { font-size: 11px; color: var(--text-muted); white-space: nowrap; }
+
+@media (max-width: 768px) { .kpi-row-4 { grid-template-columns: 1fr 1fr; } }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+  <div class="h-left">
+    <div><span class="logo">Place</span> <span class="logo-sub">Plataforma de PDCAs &middot; Cetelem Portugal</span></div>
+  </div>
+  <div class="h-right">
+    <button class="btn-nova" onclick="openModal()">+ Nova Iniciativa</button>
+    <div style="text-align:right;"><div class="user-name">Rafael Lopes</div><div class="user-role">Colaborador</div></div>
+  </div>
+</header>
+
+<!-- Tabs — data-perfis indica visibilidade por perfil (implementação SharePoint) -->
+<nav class="tabs">
+  <button class="tab active" data-tab="inicio" data-perfis="Colaborador,Resp. Equipa,Mentor,Gestor,Executivo">In&iacute;cio</button>
+  <button class="tab" data-tab="instrucoes" data-perfis="Colaborador,Resp. Equipa,Mentor,Gestor,Executivo">Instru&ccedil;&otilde;es</button>
+  <button class="tab" data-tab="pessoal" data-perfis="Colaborador,Resp. Equipa,Mentor,Gestor">Pessoal</button>
+  <button class="tab" data-tab="mentoria" data-perfis="Mentor">Mentoria<span class="tab-count">5</span></button>
+  <button class="tab" data-tab="gestor" data-perfis="Gestor">Gestor<span class="tab-count">2</span></button>
+  <button class="tab" data-tab="catalogo" data-perfis="Colaborador,Resp. Equipa,Mentor,Gestor,Executivo">Cat&aacute;logo</button>
+  <!-- Dashboard: todos vêem, mas scope e drill-down variam por perfil (ver regras em pg-dashboard) -->
+  <button class="tab" data-tab="dashboard" data-perfis="Colaborador,Resp. Equipa,Mentor,Gestor,Executivo">Dashboard</button>
+  <button class="tab" data-tab="admin" data-perfis="Mentor">Configura&ccedil;&atilde;o</button>
+</nav>
+
+<!-- Content -->
+<main class="main">
+
+  <!-- INÍCIO -->
+  <section class="page active" id="pg-inicio">
+    <!-- Hero -->
+    <div class="hero-welcome">
+      <div class="hero-content">
+        <div class="hero-badge">Place &middot; Cetelem Portugal</div>
+        <h1>Ol&aacute;, Rafael</h1>
+        <p>Bem-vindo &agrave; plataforma de melhoria cont&iacute;nua. Submeta ideias, acompanhe o progresso e quantifique o impacto das suas iniciativas PDCA.</p>
+        <div class="hero-actions">
+          <button class="btn-nova" onclick="openModal()">+ Nova Iniciativa</button>
+          <button class="btn-outline-hero" onclick="switchTab('pessoal')">Ver as minhas iniciativas &rarr;</button>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="pdca-wheel">
+          <div class="pdca-seg seg-p">P</div>
+          <div class="pdca-seg seg-d">D</div>
+          <div class="pdca-seg seg-c">C</div>
+          <div class="pdca-seg seg-a">A</div>
+          <div class="pdca-center">PDCA</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpi-row">
+      <div class="kpi"><div class="kpi-label">As Minhas Iniciativas</div><div class="kpi-val">4</div></div>
+      <div class="kpi"><div class="kpi-label">Pendentes</div><div class="kpi-val">1</div></div>
+      <div class="kpi"><div class="kpi-label">Savings Declarados</div><div class="kpi-val green">&mdash;</div></div>
+    </div>
+
+    <!-- Info grid -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+      <div>
+        <div class="sec-title">Notifica&ccedil;&otilde;es</div>
+        <ul class="notif-list" id="notifs"></ul>
+      </div>
+      <div>
+        <div class="sec-title">Contactos Mentor</div>
+        <div class="mentor-row"><div class="mentor-av">DL</div><div><div class="mentor-name">Diogo Legatheaux</div><div class="mentor-role">Mentor &middot; ACE Coach</div></div></div>
+        <div class="mentor-row"><div class="mentor-av">JB</div><div><div class="mentor-name">Joana Boto</div><div class="mentor-role">Mentor &middot; Opera&ccedil;&otilde;es</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INSTRUÇÕES -->
+  <section class="page" id="pg-instrucoes">
+    <div class="cta">
+      <div class="cta-text">
+        <h2>Como funciona o Place</h2>
+        <p>Guia pr&aacute;tico &mdash; clique em cada ac&ccedil;&atilde;o para ver o passo a passo.</p>
+      </div>
+      <button class="btn-nova" onclick="openModal()">Submeter Agora</button>
+    </div>
+
+    <div class="sec-title">O que fa&ccedil;o aqui?</div>
+    <div class="profile-cards" id="profileCards"></div>
+
+    <div class="sec-title">Como fa&ccedil;o?</div>
+    <div class="action-grid" id="actionGuide"></div>
+
+    <div class="sec-title">Fluxo do Processo</div>
+    <div class="flow">
+      <div class="flow-step"><div class="flow-num">1</div><h4>Submiss&atilde;o</h4><p>Proposta de melhoria.</p></div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step"><div class="flow-num">2</div><h4>Valida&ccedil;&atilde;o</h4><p>Mentor avalia.</p></div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step"><div class="flow-num">3</div><h4>Execu&ccedil;&atilde;o</h4><p>Implementa&ccedil;&atilde;o.</p></div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step"><div class="flow-num">4</div><h4>Savings</h4><p>Gestor valida.</p></div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step"><div class="flow-num">5</div><h4>Implementado</h4><p>Conclu&iacute;da.</p></div>
+    </div>
+
+    <div class="sec-title">Perguntas Frequentes</div>
+    <div class="faq" id="faqList"></div>
+  </section>
+
+  <!-- PESSOAL -->
+  <section class="page" id="pg-pessoal">
+    <div class="cta">
+      <div class="cta-text">
+        <h2>As Tuas Iniciativas</h2>
+        <p>Tem 1 iniciativa a aguardar valida&ccedil;&atilde;o.</p>
+      </div>
+      <button class="btn-nova" onclick="openModal()">+ Submeter Nova</button>
+    </div>
+
+    <div id="myActions" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px;">
+      <div class="validation-col val-proj">
+        <div class="sec-title">Rascunhos</div>
+        <div class="pending-list" id="myDraftList"></div>
+      </div>
+      <div class="validation-col val-sav">
+        <div class="sec-title">A Aguardar Valida&ccedil;&atilde;o</div>
+        <div class="pending-list" id="myPendingList"></div>
+      </div>
+    </div>
+
+    <div id="revisionSection" style="margin-bottom:24px;">
+      <div class="split-label" style="color:#dc2626;">A Rever</div>
+      <div id="revisionList"></div>
+    </div>
+
+    <div class="split-label">Em Curso</div>
+    <div class="tbl-wrap"><div class="tbl-scroll"><table><thead><tr>
+      <th>C&oacute;digo</th><th>Iniciativa</th><th>Estado</th><th>Saving</th><th>Valor</th><th></th>
+    </tr></thead><tbody id="myTable"></tbody></table></div></div>
+
+    <div id="collabSection" style="margin-bottom:24px;">
+      <div class="split-label" style="color:#e8960c;">Recebidos</div>
+      <div class="tbl-wrap"><div class="tbl-scroll"><table><thead><tr>
+        <th>C&oacute;digo</th><th>Iniciativa</th><th>Tipo</th><th>De</th><th>Equipa</th><th>Ac&ccedil;&otilde;es</th>
+      </tr></thead><tbody id="collabTableIn"></tbody></table></div></div>
+      <div class="split-label muted" style="margin-top:16px;">Enviados</div>
+      <div class="tbl-wrap"><div class="tbl-scroll"><table><thead><tr>
+        <th>C&oacute;digo</th><th>Iniciativa</th><th>Tipo</th><th>Para</th><th>Equipa</th><th>Estado</th>
+      </tr></thead><tbody id="collabTableOut"></tbody></table></div></div>
+    </div>
+
+    <hr class="split-divider">
+
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <div class="split-label muted">Iniciativas em Aberto</div>
+      <button class="btn-outline" style="font-size:11px;padding:4px 12px;" onclick="exportPessoalCSV()">Exportar Excel</button>
+    </div>
+    <div class="filters">
+      <select id="fEst"><option value="">Todos os estados</option><option>Rascunho</option><option>Em Valida&ccedil;&atilde;o Projecto</option><option>Em Execu&ccedil;&atilde;o</option><option>Em Valida&ccedil;&atilde;o Savings</option><option>Implementado</option><option>Cancelado</option></select>
+      <select id="fSav"><option value="">Todos os savings</option><option>Hard Saving</option><option>Soft Saving</option><option>Sem saving</option></select>
+      <input type="text" id="fSearch" placeholder="Pesquisar...">
+      <button class="btn-clear" onclick="clearF()">Limpar</button>
+      <span class="filter-count" id="fCount"></span>
+    </div>
+    <div class="tbl-wrap"><div class="tbl-scroll"><table><thead><tr>
+      <th>C&oacute;digo</th><th>Iniciativa</th><th>Estado</th><th>Colaborador</th><th>Equipa</th><th>Saving</th><th>Valor</th><th></th>
+    </tr></thead><tbody id="othersTable"></tbody></table></div></div>
+  </section>
+
+  <!-- MENTORIA -->
+  <section class="page" id="pg-mentoria">
+    <div class="cta">
+      <div class="cta-text">
+        <h2>5 ac&ccedil;&otilde;es pendentes</h2>
+        <p>3 valida&ccedil;&otilde;es de projecto &middot; 2 confirma&ccedil;&otilde;es de savings</p>
+      </div>
+      <button class="btn-nova" onclick="$('mPending').scrollIntoView({behavior:'smooth'})">Validar Iniciativas</button>
+    </div>
+
+    <div class="kpi-row">
+      <div class="kpi"><div class="kpi-label">Total Carteira</div><div class="kpi-val" id="mTotal">16</div></div>
+      <div class="kpi"><div class="kpi-label">Em Execu&ccedil;&atilde;o</div><div class="kpi-val" id="mExec">5</div></div>
+      <div class="kpi"><div class="kpi-label">Savings Validados</div><div class="kpi-val green" id="mSav">&euro;31.5k</div></div>
+    </div>
+
+    <div id="mPending" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:8px;">
+      <div class="validation-col val-proj">
+        <div class="sec-title">Valida&ccedil;&atilde;o de Projecto</div>
+        <div class="pending-list" id="mValProj"></div>
+      </div>
+      <div class="validation-col val-sav">
+        <div class="sec-title">Valida&ccedil;&atilde;o de Savings</div>
+        <div class="pending-list" id="mValSav"></div>
+      </div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;">
+      <div class="sec-title" style="margin-bottom:0;border-bottom:none;padding-bottom:0;">Iniciativas em Aberto</div>
+      <button class="btn-outline" style="font-size:11px;padding:4px 12px;" onclick="exportMentoriaCSV()">Exportar Excel</button>
+    </div>
+    <div style="border-bottom:1px solid var(--border);margin-bottom:16px;"></div>
+    <div class="filters">
+      <select id="mfEst"><option value="">Todos</option><option>Em Valida&ccedil;&atilde;o Projecto</option><option>Em Execu&ccedil;&atilde;o</option><option>Em Valida&ccedil;&atilde;o Savings</option><option>Implementado</option><option>Cancelado</option></select>
+      <input type="text" id="mfSearch" placeholder="Pesquisar...">
+      <button class="btn-clear" onclick="clearMF()">Limpar</button>
+      <span class="filter-count" id="mfCount"></span>
+    </div>
+    <div class="tbl-wrap"><div class="tbl-scroll"><table><thead><tr>
+      <th>C&oacute;digo</th><th>Iniciativa</th><th>Estado</th><th>Colaborador</th><th>Equipa</th><th>Saving</th><th>Valor</th><th></th>
+    </tr></thead><tbody id="mTable"></tbody></table></div></div>
+
+    <div id="mCollabSection" style="margin-top:16px;margin-bottom:24px;">
+      <div class="split-label" style="color:#e8960c;">Recebidos</div>
+      <div class="tbl-wrap"><div class="tbl-scroll"><table><thead><tr>
+        <th>C&oacute;digo</th><th>Iniciativa</th><th>Tipo</th><th>De</th><th>Equipa</th><th>Ac&ccedil;&otilde;es</th>
+      </tr></thead><tbody id="mCollabTableIn"></tbody></table></div></div>
+      <div class="split-label muted" style="margin-top:16px;">Enviados</div>
+      <div class="tbl-wrap"><div class="tbl-scroll"><table><thead><tr>
+        <th>C&oacute;digo</th><th>Iniciativa</th><th>Tipo</th><th>Para</th><th>Equipa</th><th>Estado</th>
+      </tr></thead><tbody id="mCollabTableOut"></tbody></table></div></div>
+    </div>
+  </section>
+
+  <!-- GESTOR -->
+  <section class="page" id="pg-gestor">
+    <div class="cta">
+      <div class="cta-text">
+        <h2>2 savings aguardam aprova&ccedil;&atilde;o</h2>
+        <p>Valide os savings declarados pelas equipas.</p>
+      </div>
+      <button class="btn-nova" onclick="$('gPending').scrollIntoView({behavior:'smooth'})">Aprovar</button>
+    </div>
+
+    <div class="kpi-row">
+      <div class="kpi"><div class="kpi-label">Pendentes</div><div class="kpi-val">2</div></div>
+      <div class="kpi"><div class="kpi-label">Validados Este M&ecirc;s</div><div class="kpi-val">3</div></div>
+      <div class="kpi"><div class="kpi-label">Savings Aprovados</div><div class="kpi-val green">&euro;31.5k</div></div>
+    </div>
+
+    <div id="gPending" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:8px;">
+      <div class="validation-col val-sav">
+        <div class="sec-title">Pendentes de Aprova&ccedil;&atilde;o</div>
+        <div class="pending-list" id="gColLeft"></div>
+      </div>
+      <div class="validation-col val-sav">
+        <div class="sec-title">&nbsp;</div>
+        <div class="pending-list" id="gColRight"></div>
+      </div>
+    </div>
+
+    <div id="gCollabSection" style="margin-top:16px;margin-bottom:24px;">
+      <div class="split-label" style="color:#e8960c;">Recebidos</div>
+      <div class="tbl-wrap"><div class="tbl-scroll"><table><thead><tr>
+        <th>C&oacute;digo</th><th>Iniciativa</th><th>Tipo</th><th>De</th><th>Equipa</th><th>Ac&ccedil;&otilde;es</th>
+      </tr></thead><tbody id="gCollabTableIn"></tbody></table></div></div>
+      <div class="split-label muted" style="margin-top:16px;">Enviados</div>
+      <div class="tbl-wrap"><div class="tbl-scroll"><table><thead><tr>
+        <th>C&oacute;digo</th><th>Iniciativa</th><th>Tipo</th><th>Para</th><th>Equipa</th><th>Estado</th>
+      </tr></thead><tbody id="gCollabTableOut"></tbody></table></div></div>
+    </div>
+
+    <div class="sec-title" style="margin-top:16px;">Hist&oacute;rico Completo</div>
+    <div class="tbl-wrap"><div class="tbl-scroll"><table><thead><tr>
+      <th>C&oacute;digo</th><th>Iniciativa</th><th>Estado</th><th>Colaborador</th><th>Tipo</th><th>Valor</th><th></th>
+    </tr></thead><tbody id="gTable"></tbody></table></div></div>
+  </section>
+
+  <!-- CATÁLOGO -->
+  <section class="page" id="pg-catalogo">
+    <div class="cta">
+      <div class="cta-text">
+        <h2>&euro;31.5k de savings gerados</h2>
+        <p>4 iniciativas implementadas com sucesso.</p>
+      </div>
+      <button class="btn-outline" onclick="exportCSV()">Exportar CSV</button>
+    </div>
+
+    <div class="kpi-row">
+      <div class="kpi"><div class="kpi-label">Implementados</div><div class="kpi-val">4</div></div>
+      <div class="kpi"><div class="kpi-label">Savings Acumulados</div><div class="kpi-val green">&euro;31.5k</div></div>
+      <div class="kpi"><div class="kpi-label">M&eacute;dia / Iniciativa</div><div class="kpi-val green">&euro;7.9k</div></div>
+    </div>
+
+    <div style="margin-bottom:14px;">
+      <div class="toggle"><button class="toggle-btn active" id="tI" onclick="setCat('impl')">Implementados</button><button class="toggle-btn" id="tA" onclick="setCat('arq')">Arquivo</button></div>
+    </div>
+    <div class="tbl-wrap"><div class="tbl-scroll"><table><thead><tr>
+      <th>C&oacute;digo</th><th>Iniciativa</th><th>Estado</th><th>Colaborador</th><th>Equipa</th><th>Saving</th><th>Valor</th><th>Implementado</th><th></th>
+    </tr></thead><tbody id="catTable"></tbody></table></div></div>
+  </section>
+
+  <!-- DASHBOARD — mockup mostra dados completos para todos os perfis.
+    Regras de visibilidade para implementação SharePoint:
+    | Perfil         | Scope de dados                                                    | Drill-down colaborador |
+    | Colaborador    | Não confidenciais + as suas próprias                              | Não                    |
+    | Resp. Equipa   | Sua equipa (conf. + não conf.) + não confidenciais de outras      | Não                    |
+    | Gestor         | Sua equipa (conf. + não conf.) + não confidenciais de outras      | Sim                    |
+    | Mentor         | Todas (conf. + não conf.)                                        | Sim                    |
+    | Executivo      | Todas (conf. + não conf., leitura)                               | Sim                    |
+  -->
+  <section class="page" id="pg-dashboard">
+    <div class="cta">
+      <div class="cta-text">
+        <h2>Vis&atilde;o Geral das Iniciativas</h2>
+        <p>M&eacute;tricas por equipa, estado e per&iacute;odo — com drill-down por colaborador.</p>
+      </div>
+      <button class="btn-nova" onclick="exportDashboardCSV()">Exportar Relat&oacute;rio</button>
+    </div>
+
+    <div class="kpi-row-4">
+      <div class="kpi"><div class="kpi-label">Total Iniciativas</div><div class="kpi-val" id="mKpiTotal">0</div></div>
+      <div class="kpi"><div class="kpi-label">Em Curso</div><div class="kpi-val" id="mKpiCurso">0</div></div>
+      <div class="kpi"><div class="kpi-label">Implementadas</div><div class="kpi-val" id="mKpiImpl">0</div></div>
+      <div class="kpi"><div class="kpi-label">Savings Acumulados</div><div class="kpi-val green" id="mKpiSavings">&euro;0</div></div>
+    </div>
+
+    <div class="filters">
+      <!-- Scope: "Minha Equipa" filtra pela equipa do utilizador logado (mockup: equipa do USER) -->
+      <div class="toggle" id="mfScope">
+        <button class="toggle-btn active" onclick="setDashScope('todas')">Todas</button>
+        <button class="toggle-btn" onclick="setDashScope('minha')">Minha Equipa</button>
+      </div>
+      <select id="mfPeriodo">
+        <option value="">Tudo</option>
+        <option value="1">&Uacute;ltimo m&ecirc;s</option>
+        <option value="3">&Uacute;ltimos 3 meses</option>
+        <option value="6">&Uacute;ltimos 6 meses</option>
+        <option value="12">&Uacute;ltimo ano</option>
+      </select>
+      <select id="mfEquipa">
+        <option value="">Todas as equipas</option>
+        <option>Dir. Comercial</option>
+        <option>Opera&ccedil;&otilde;es</option>
+        <option>Digital</option>
+        <option>Risco</option>
+        <option>Financeiro</option>
+      </select>
+      <select id="mfEstado">
+        <option value="">Todos os estados</option>
+        <option>Rascunho</option>
+        <option>Em Valida&ccedil;&atilde;o Projecto</option>
+        <option>Em Execu&ccedil;&atilde;o</option>
+        <option>Em Valida&ccedil;&atilde;o Savings</option>
+        <option>Implementado</option>
+        <option>Cancelado</option>
+        <option>Em Revis&atilde;o</option>
+      </select>
+      <button class="btn-clear" onclick="clearDashboardF()">Limpar</button>
+      <span class="filter-count" id="mfTotal"></span>
+    </div>
+
+    <div class="tbl-wrap">
+      <div class="tbl-scroll">
+        <table>
+          <thead><tr>
+            <th>Equipa</th>
+            <th class="metric-header">Total</th>
+            <th class="metric-header">Rascunho</th>
+            <th class="metric-header">Valida&ccedil;&atilde;o</th>
+            <th class="metric-header">Execu&ccedil;&atilde;o</th>
+            <th class="metric-header">Val. Savings</th>
+            <th class="metric-header">Revis&atilde;o</th>
+            <th class="metric-header">Implementadas</th>
+            <th class="metric-header">Canceladas</th>
+          </tr></thead>
+          <tbody id="metricsTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONFIGURAÇÃO -->
+  <section class="page" id="pg-admin">
+    <div class="cta">
+      <div class="cta-text">
+        <h2>Configura&ccedil;&atilde;o de Utilizadores</h2>
+        <p>Gerir perfis, permiss&otilde;es e atribui&ccedil;&atilde;o de mentores.</p>
+      </div>
+      <button class="btn-outline" onclick="exportAdminCSV()">Exportar Excel</button>
+    </div>
+
+    <div class="filters">
+      <select id="adminFilterPerfil" onchange="renderAdmin()">
+        <option value="">Todos os perfis</option>
+        <option>Colaborador</option>
+        <option>Resp. Equipa</option>
+        <option>Gestor</option>
+        <option>Mentor</option>
+        <option>Executivo</option>
+      </select>
+      <select id="adminFilterEquipa" onchange="renderAdmin()">
+        <option value="">Todas as equipas</option>
+        <option>Dir. Comercial</option>
+        <option>Opera&ccedil;&otilde;es</option>
+        <option>Digital</option>
+        <option>Risco</option>
+        <option>Financeiro</option>
+        <option>Transversal</option>
+        <option>CEO</option>
+      </select>
+      <select id="adminFilterSavings" onchange="renderAdmin()">
+        <option value="">Valida&ccedil;&atilde;o savings</option>
+        <option value="Soft">Valida Soft</option>
+        <option value="Hard">Valida Hard</option>
+      </select>
+      <input type="text" id="adminSearch" placeholder="Pesquisar por nome..." oninput="renderAdmin()">
+      <button class="btn-clear" onclick="clearAdminF()">Limpar</button>
+      <span class="filter-count" id="adminCount"></span>
+    </div>
+    <div class="tbl-wrap">
+      <div class="tbl-scroll">
+        <table>
+          <thead><tr>
+            <th>Nome</th>
+            <th>Equipa</th>
+            <th>Perfil</th>
+            <th>Valida Savings</th>
+            <th>Equipas Atribu&iacute;das</th>
+            <th>Email</th>
+            <th>Ac&ccedil;&otilde;es</th>
+          </tr></thead>
+          <tbody id="adminTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Side Panel -->
+<div class="overlay" id="ov" onclick="closePanel()"></div>
+<aside class="panel" id="pn">
+  <div class="pn-head">
+    <div class="pn-top"><span class="pn-code" id="pCode"></span><button class="pn-close" onclick="closePanel()">&times;</button></div>
+    <div class="pn-title" id="pTitle"></div>
+    <div class="pn-chips" id="pChips"></div>
+  </div>
+  <div class="pn-body" id="pBody"></div>
+  <div class="pn-foot" id="pFoot"></div>
+</aside>
+
+<!-- Modal -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <div class="modal-head"><h2>Nova Iniciativa PDCA</h2><button class="pn-close" onclick="closeModal()">&times;</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">T&iacute;tulo <span class="req">*</span></label><input type="text" class="form-input" id="fTit" placeholder="Ex: Redu&ccedil;&atilde;o do tempo de..."></div>
+      <div class="form-group"><label class="form-label">Descri&ccedil;&atilde;o</label><textarea class="form-textarea" id="fDesc" placeholder="Descreva a oportunidade..."></textarea></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Equipa <span class="req">*</span></label><select class="form-select" id="fEq"><option value="">Seleccionar...</option><option>Dir. Comercial</option><option>Opera&ccedil;&otilde;es</option><option>Digital</option><option>Risco</option><option>Financeiro</option></select></div>
+        <div class="form-group"><label class="form-label">Tipo de Saving</label><select class="form-select" id="fSavT" onchange="toggleEst()"><option value="Sem saving">Sem saving</option><option>Hard Saving</option><option>Soft Saving</option></select></div>
+      </div>
+      <div class="form-group hidden" id="fEstGrp"><label class="form-label">Estimativa (&euro;)</label><input type="text" class="form-input" id="fEstV" placeholder="Ex: 5.000"></div>
+      <div class="form-group"><label class="form-label">Problema / Oportunidade</label><textarea class="form-textarea" id="fProb" placeholder="Descreva o problema..."></textarea></div>
+      <div class="form-group"><label class="form-label">Objectivo</label><textarea class="form-textarea" id="fObj" placeholder="Resultado esperado..."></textarea></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-check"><input type="checkbox" id="fConf"> Confidencial</label></div>
+        <div class="form-group"><label class="form-label">Anexos</label><input type="file" class="form-input" multiple style="padding:5px;"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn-secondary" onclick="saveRascunho()">Gravar Rascunho</button>
+      <button class="btn-nova" onclick="submitIniciativa()">Submeter</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── Constants ── */
+const E={RASC:'Rascunho',VAL_PROJ:'Em Validação Projecto',EXEC:'Em Execução',VAL_SAV:'Em Validação Savings',IMPL:'Implementado',CANCEL:'Cancelado',REVISAO:'Em Revisão'};
+const $=id=>document.getElementById(id);
+const TODAY=new Date();
+
+/* ── Data ── */
+const DB=[
+  {code:'PDCA-048',title:'Redução de chamadas repetidas no apoio ao cliente',estado:'Rascunho',colab:'Rafael Lopes',equipa:'Operações',saving:'Sem saving',valor:'—',data:'2026-03-12',desc:'Análise do volume de chamadas repetidas.',problema:'28% das chamadas são repetições.',objetivo:'Reduzir para menos de 10% em 90 dias.',gestor:'Pedro Lopes',conf:false},
+  {code:'PDCA-042',title:'Redução do lead time de aprovação de crédito pessoal',estado:'Em Validação Projecto',colab:'Rafael Lopes',equipa:'Dir. Comercial',saving:'Soft Saving',valor:'—',data:'2026-03-03',desc:'Oportunidade de reduzir lead time de 72h para 24h.',problema:'Validação manual em 4 etapas.',objetivo:'Reduzir em 65% em 60 dias.',gestor:'Patrícia Vitorino',conf:true},
+  {code:'PDCA-043',title:'Automatização de relatórios de reconciliação mensal',estado:'Em Validação Projecto',colab:'Amadeu Mendes',equipa:'Operações',saving:'Hard Saving',valor:'—',data:'2026-03-05',desc:'6 relatórios mensais manuais.',problema:'Risco de erro e retrabalho.',objetivo:'Automatizar 100%.',gestor:'Pedro Lopes',conf:false},
+  {code:'PDCA-047',title:'Optimização do onboarding digital de clientes',estado:'Em Validação Projecto',colab:'Gil Gaspar',equipa:'Digital',saving:'Sem saving',valor:'—',data:'2026-03-07',desc:'Taxa de abandono de 34%.',problema:'Fricção na etapa documental.',objetivo:'Reduzir para 15% em 90 dias.',gestor:'Ana Correia',conf:false},
+  {code:'PDCA-028',title:'Simplificação do fluxo de aprovação de contratos',estado:'Em Execução',colab:'Inês Carvalho',equipa:'Dir. Comercial',saving:'Soft Saving',valor:'—',data:'2026-01-15',desc:'Redução de etapas.',problema:'7 etapas redundantes.',objetivo:'Reduzir para 4.',gestor:'Patrícia Vitorino',conf:false},
+  {code:'PDCA-033',title:'KPIs de desempenho para equipas de cobrança',estado:'Em Execução',colab:'Sofia Rodrigues',equipa:'Risco',saving:'Hard Saving',valor:'—',data:'2026-01-20',desc:'KPIs operacionais.',problema:'Ausência de métricas.',objetivo:'Dashboard com 8 KPIs.',gestor:'Luísa Costa',conf:true},
+  {code:'PDCA-036',title:'Revisão do processo de validação documental',estado:'Em Execução',colab:'Beatriz Pinto',equipa:'Digital',saving:'Sem saving',valor:'—',data:'2026-02-01',desc:'Revisão da validação digital.',problema:'Tempo médio de 48h.',objetivo:'Reduzir para 12h.',gestor:'Ana Correia',conf:false},
+  {code:'PDCA-039',title:'Digitalização de arquivo de contratos',estado:'Em Execução',colab:'Carlos Mendes',equipa:'Operações',saving:'Hard Saving',valor:'—',data:'2026-02-05',desc:'Digitalização do arquivo físico.',problema:'15.000 contratos sem índice.',objetivo:'100% em 90 dias.',gestor:'Pedro Lopes',conf:false},
+  {code:'PDCA-034',title:'Automação de alertas de vencimento de crédito',estado:'Em Revisão',colab:'Rafael Lopes',equipa:'Risco',saving:'Soft Saving',valor:'—',data:'2026-01-25',desc:'Automatização de alertas.',problema:'12% de falha nos manuais.',objetivo:'Automatizar 100%.',gestor:'Luísa Costa',conf:false,revisao:{por:'Diogo Legatheaux',perfil:'Mentor',data:'10/03/2026',motivo:'O business case precisa de incluir os custos de licenciamento da ferramenta de automação. Rever também o timeline — 100% em 60 dias parece optimista.'}},
+  {code:'PDCA-031',title:'Eliminação de tarefas duplicadas no ciclo de cobrança',estado:'Em Validação Savings',colab:'Hugo Pires',equipa:'Operações',saving:'Soft Saving',valor:'€8.400',data:'2026-01-14',desc:'3 etapas duplicadas eliminadas.',problema:'Tarefas redundantes.',objetivo:'Reduzir esforço em 20%.',gestor:'Pedro Lopes',nota:'Validado pelo Gestor RD. Aguarda Mentor.',conf:false},
+  {code:'PDCA-038',title:'Redução de erros no processamento de pagamentos',estado:'Em Validação Savings',colab:'Nuno Almeida',equipa:'Financeiro',saving:'Hard Saving',valor:'€14.200',data:'2026-01-22',desc:'Erro reduzido de 2,3% para 0,1%.',problema:'Custos de reprocessamento.',objetivo:'Erro abaixo de 0,2%.',gestor:'Luísa Costa',nota:'Validado pelo Gestor RF. Valor confirmado.',conf:true},
+  {code:'PDCA-022',title:'Redução do ciclo de fecho contabilístico',estado:'Implementado',colab:'Tiago Nunes',equipa:'Financeiro',saving:'Hard Saving',valor:'€11.500',data:'2025-09-12',dataImpl:'2025-12-18',desc:'Optimização do fecho mensal.',problema:'8 dias de fecho.',objetivo:'4 dias.',gestor:'Luísa Costa',conf:false},
+  {code:'PDCA-024',title:'Portal de auto-atendimento para clientes',estado:'Implementado',colab:'Rafael Lopes',equipa:'Digital',saving:'Soft Saving',valor:'€6.000',data:'2025-10-03',dataImpl:'2026-01-10',desc:'Portal self-service.',problema:'80% chamadas básicas.',objetivo:'Reduzir 50%.',gestor:'Ana Correia',conf:false},
+  {code:'PDCA-025',title:'Optimização de campanhas de recuperação de crédito',estado:'Implementado',colab:'Vera Simões',equipa:'Risco',saving:'Hard Saving',valor:'€9.800',data:'2025-10-18',dataImpl:'2026-01-28',desc:'Segmentação avançada.',problema:'Recuperação em 23%.',objetivo:'35%.',gestor:'Luísa Costa',conf:false},
+  {code:'PDCA-026',title:'Standardização do processo de proposta comercial',estado:'Implementado',colab:'Gil Gaspar',equipa:'Dir. Comercial',saving:'Soft Saving',valor:'€4.200',data:'2025-11-02',dataImpl:'2026-02-14',desc:'Templates padronizados.',problema:'Formato inconsistente.',objetivo:'Template único.',gestor:'Patrícia Vitorino',conf:false},
+  {code:'PDCA-030',title:'Redução de retrabalho na análise de risco',estado:'Cancelado',colab:'Amadeu Mendes',equipa:'Risco',saving:'Sem saving',valor:'—',data:'2025-12-20',desc:'Simplificar análise.',problema:'Análise igual para todos.',objetivo:'Via simplificada < 5.000€.',gestor:'Luísa Costa',conf:false},
+];
+const USER='Rafael Lopes'; // Rafa Lopes I love you <3
+const ST=[E.RASC,E.VAL_PROJ,E.EXEC,E.VAL_SAV,E.IMPL];
+const COMMENTS=[
+  {a:'Diogo Legatheaux',i:'DL',d:'12/03/2026',t:'Iniciativa com bom potencial. Verificar budget para automatização. <span class="mention">@Rafael Lopes</span> confirma com o teu gestor.'},
+  {a:'Rafael Lopes',i:'RL',d:'11/03/2026',t:'Obrigado <span class="mention">@Diogo Legatheaux</span>, vou confirmar.'},
+  {a:'Amadeu Mendes',i:'AM',d:'10/03/2026',t:'Posso disponibilizar dados do Q4 para o business case. <span class="mention">@Rafael Lopes</span>'},
+  {a:'Luísa Costa',i:'LC',d:'09/03/2026',t:'<span class="mention">@Diogo Legatheaux</span> Precisamos rever o valor antes de aprovar. O cálculo não bate com o Q3.',conf:'Mentor, Gestor'},
+  {a:'Diogo Legatheaux',i:'DL',d:'09/03/2026',t:'<span class="mention">@Luísa Costa</span> Concordo, vou pedir revisão ao colaborador.',conf:'Mentor, Gestor'},
+];
+
+/* Mentor responsável por equipa (primeira intervenção) */
+const MENTOR_MAP = {
+  'Dir. Comercial': 'Diogo Legatheaux',
+  'Operações': 'Joana Boto',
+  'Digital': 'Diogo Legatheaux',
+  'Risco': 'Patrícia Peixoto',
+  'Financeiro': 'Joana Boto'
+};
+/* Gestor validador por equipa (routing automático) */
+const GESTOR_MAP = {
+  'Dir. Comercial': 'Patrícia Vitorino',
+  'Operações': 'Pedro Lopes',
+  'Digital': 'Ana Correia',
+  'Risco': 'Luísa Costa',
+  'Financeiro': 'Luísa Costa'
+};
+function getMentor(d){ return MENTOR_MAP[d.equipa] || 'Diogo Legatheaux'; }
+function getGestor(d){ return GESTOR_MAP[d.equipa] || d.gestor; }
+
+let catView='impl';
+
+const COLLABS=[
+  {code:'PDCA-033',by:'Sofia Rodrigues',tipo:'colaboracao'},
+  {code:'PDCA-033',by:'Hugo Pires',tipo:'colaboracao'},
+  {code:'PDCA-039',by:'Carlos Mendes',tipo:'partilha'},
+  {code:'PDCA-028',by:'Inês Carvalho',tipo:'partilha'},
+  {code:'PDCA-036',by:'Beatriz Pinto',tipo:'transferencia'},
+  {code:'PDCA-043',by:'Rafael Lopes',tipo:'pedido_enviado',para:'Amadeu Mendes'},
+  {code:'PDCA-047',by:'Gil Gaspar',tipo:'pedido_recebido'},
+];
+const MENTOR_COLLABS=[
+  {code:'PDCA-031',by:'Joana Boto',tipo:'colaboracao'},
+  {code:'PDCA-038',by:'Patrícia Peixoto',tipo:'pedido_recebido'},
+  {code:'PDCA-034',by:'Diogo Legatheaux',tipo:'pedido_enviado',para:'Joana Boto'},
+];
+
+/* ── Utilities ── */
+function days(d){return Math.floor((TODAY-new Date(d))/864e5)}
+function fmtD(d){const p=d.split('-');return p[2]+'/'+p[1]+'/'+p[0]}
+function chipCls(e){
+  if(e===E.IMPL)return'chip-done';
+  if(e===E.CANCEL||e===E.RASC)return'chip-inactive';
+  if(e===E.REVISAO)return'chip-revision';
+  if(e.includes('Validação'))return'chip-pending';
+  return'chip-active';
+}
+
+/* ── Generic Table ── */
+const COL={
+  code:d=>`<td class="col-code">${d.code}</td>`,
+  title:d=>`<td class="col-title">${d.title}</td>`,
+  estado:d=>`<td><span class="chip ${chipCls(d.estado)}">${d.estado}</span></td>`,
+  saving:d=>`<td>${d.saving}</td>`,
+  valor:d=>`<td class="col-val">${d.valor}</td>`,
+  colab:d=>`<td>${d.colab}</td>`,
+  equipa:d=>`<td>${d.equipa}</td>`,
+  data:d=>`<td class="col-date">${fmtD(d.data)}</td>`,
+  dataImpl:d=>`<td class="col-date">${d.dataImpl?fmtD(d.dataImpl):'—'}</td>`,
+  btn:(label,cls,ctx)=>d=>`<td><button class="${cls}" onclick="event.stopPropagation();openPanel('${d.code}','${ctx}')">${label}</button></td>`,
+  catAction:d=>`<td>${d.estado===E.IMPL?`<button class="btn-outline" onclick="event.stopPropagation();alert('Replicar (mockup).')">Replicar</button>`:'<span style="color:var(--text-muted);font-size:11px;">Arquivado</span>'}</td>`,
+};
+function renderTable(targetId,data,columns,ctx,rowClass){
+  $(targetId).innerHTML=data.map(d=>{
+    const cls=rowClass?` class="${rowClass}"`:'';
+    return`<tr${cls} onclick="openPanel('${d.code}','${ctx}')">${columns.map(c=>c(d)).join('')}</tr>`;
+  }).join('');
+}
+
+/* ── Generic Filters ── */
+function filteredRender(cfg){
+  let list=[...cfg.data];
+  (cfg.filters||[]).forEach(f=>{const val=$(f.id).value;if(val)list=list.filter(d=>d[f.key]===val);});
+  if(cfg.searchId){const s=$(cfg.searchId).value.toLowerCase();if(s)list=list.filter(d=>d.title.toLowerCase().includes(s)||d.code.toLowerCase().includes(s));}
+  if(cfg.countId)$(cfg.countId).textContent=list.length+' resultados';
+  renderTable(cfg.targetId,list,cfg.columns,cfg.ctx);
+}
+
+/* ── Generic Pending List ── */
+function renderPendingList(targetId,items,ctx,opts){
+  $(targetId).innerHTML=items.map(d=>{
+    const dd=days(d.data);
+    const urgent=opts.showDays&&dd>7;
+    const meta=opts.metaFn?opts.metaFn(d):`${d.colab} &middot; ${d.equipa}`;
+    const right=opts.showDays?`<span class="pi-days${urgent?' late':''}">${dd}d</span>`:`<span class="pi-value">${d.valor}</span>`;
+    return`<div class="pending-item${urgent?' urgent':''}" onclick="openPanel('${d.code}','${ctx}')"><div class="pi-body"><div class="pi-code">${d.code}</div><div class="pi-title">${d.title}</div><div class="pi-meta">${meta}</div></div><div class="pi-right">${right}<button class="btn-sm" onclick="event.stopPropagation();openPanel('${d.code}','${ctx}')">${opts.btnLabel}</button></div></div>`;
+  }).join('');
+}
+
+/* ── Column Configs ── */
+const COLS_MY=[COL.code,COL.title,COL.estado,COL.saving,COL.valor,COL.btn('Ver','btn-sm','pessoal')];
+const COLS_OTHERS=[COL.code,COL.title,COL.estado,COL.colab,COL.equipa,COL.saving,COL.valor,COL.btn('Ver','btn-outline','pessoal')];
+const COLS_MENTOR=[COL.code,COL.title,COL.estado,COL.colab,COL.equipa,COL.saving,COL.valor,COL.btn('Ver','btn-outline','mentoria')];
+const COLS_GESTOR=[COL.code,COL.title,COL.estado,COL.colab,COL.saving,COL.valor,COL.btn('Ver','btn-outline','gestor')];
+const COLS_CAT=[COL.code,COL.title,COL.estado,COL.colab,COL.equipa,COL.saving,COL.valor,COL.dataImpl,COL.catAction];
+
+
+/* ── Tabs ── */
+const TAB_RENDERERS={pessoal:renderPessoal,mentoria:renderMentoria,gestor:renderGestor,catalogo:renderCatalogo,dashboard:renderDashboard,admin:renderAdmin};
+function switchTab(id){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelector(`.tab[data-tab="${id}"]`).classList.add('active');
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  $('pg-'+id).classList.add('active');
+  if(TAB_RENDERERS[id])TAB_RENDERERS[id]();
+}
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>switchTab(t.dataset.tab)));
+
+/* ── Início ── */
+function renderInicio(){
+  const notifs=[
+    {t:'PDCA-042 submetido para validação de projecto.',d:'há 4 dias'},
+    {t:'PDCA-034 transitou para Em Execução.',d:'há 2 semanas'},
+    {t:'Diogo Legatheaux comentou PDCA-043.',d:'há 9 dias'},
+    {t:'PDCA-031 — savings submetidos por Hugo Pires.',d:'há 3 semanas'},
+    {t:'PDCA-047 recebido para validação por Gil Gaspar.',d:'há 7 dias'},
+  ];
+  $('notifs').innerHTML=notifs.map(n=>`<li class="notif-item"><div class="notif-dot"></div><div><div class="notif-text">${n.t}</div><div class="notif-time">${n.d}</div></div></li>`).join('');
+}
+
+/* ── Instruções ── */
+function renderInstrucoes(){
+  /* Perfis */
+  const profiles=[
+    {icon:'colab',ini:'CO',title:'Colaborador',sub:'Qualquer colaborador Cetelem',
+      acts:['Submeter iniciativas de melhoria','Acompanhar o estado das suas propostas','Editar rascunhos e pedir colaboração','Cancelar iniciativas próprias']},
+    {icon:'mentor',ini:'MT',title:'Mentor',sub:'ACE Coach / responsável de validação',
+      acts:['Validar ou rejeitar projectos submetidos','Solicitar revisão ou esclarecimentos','Confirmar savings finais','Gerir a carteira de iniciativas']},
+    {icon:'gestor',ini:'GS',title:'Gestor',sub:'Responsável de Departamento / Financeiro',
+      acts:['Aprovar valores de savings','Validar impacto financeiro (Hard/Soft)','Consultar histórico de aprovações']}
+  ];
+  $('profileCards').innerHTML=profiles.map(p=>`<div class="profile-card" onclick="this.classList.toggle('expanded')"><div class="pc-header"><div class="pc-icon ${p.icon}">${p.ini}</div><div><div class="pc-title">${p.title}</div><div class="pc-subtitle">${p.sub}</div></div></div><div class="pc-body"><ul>${p.acts.map(a=>`<li>${a}</li>`).join('')}</ul></div></div>`).join('');
+
+  /* Guias de Acção */
+  const actions=[
+    {title:'Submeter uma iniciativa',who:'Colaborador',color:'#9ac433',perfis:['Colaborador','Resp. Equipa','Mentor','Gestor'],
+      steps:[
+        'Clique em <span class="ui-hint">+ Nova Iniciativa</span> no canto superior direito.',
+        'Preencha <strong>Título</strong> e <strong>Equipa</strong> (obrigatórios). Adicione descrição, problema e objectivo.',
+        'Se a iniciativa gera poupança, seleccione <strong>Hard Saving</strong> ou <strong>Soft Saving</strong> e indique a estimativa.',
+        'Marque <strong>Confidencial</strong> se necessário (só autor, Mentor e Gestores verão a iniciativa).',
+        'Clique em <span class="ui-hint">Submeter</span> para enviar para validação, ou <span class="ui-hint neutral">Gravar Rascunho</span> para continuar mais tarde.'],
+      tip:'O rascunho fica no seu separador Pessoal. Pode editá-lo quantas vezes quiser antes de submeter.'},
+    {title:'Editar um rascunho',who:'Colaborador',color:'#9ac433',perfis:['Colaborador','Resp. Equipa','Mentor','Gestor'],
+      steps:[
+        'Vá ao separador <strong>Pessoal</strong>.',
+        'Na secção <strong>Rascunhos</strong> (caixa verde no topo), clique no botão <span class="ui-hint">Editar</span>, ou abra o detalhe e use <span class="ui-hint neutral">Mais acções</span> → Editar.',
+        'No formulário, altere os campos pretendidos.',
+        'Clique em <span class="ui-hint">Submeter</span> para enviar para validação, ou <span class="ui-hint neutral">Gravar Rascunho</span> para guardar.'],
+      tip:'Só é possível editar iniciativas em estado Rascunho. Após submissão, a edição só é possível se o Mentor ou Gestor solicitar revisão.'},
+    {title:'Validar um projecto',who:'Mentor',color:'#5a8a4a',perfis:['Mentor'],/*Gestor não vê — específico do Mentor*/
+      steps:[
+        'Vá ao separador <strong>Mentoria</strong>. As iniciativas pendentes aparecem no topo.',
+        'Clique na iniciativa em <span class="ui-hint neutral">Em Validação Projecto</span>.',
+        'Reveja os detalhes no painel lateral: descrição, problema, objectivo e equipa.',
+        'Escolha uma acção: <span class="ui-hint">Aprovar</span> ou <span class="ui-hint danger">Rejeitar</span> (com justificação). Para outras opções, clique em <span class="ui-hint neutral">Mais acções</span> — Solicitar Revisão, Pedir Esclarecimentos, Pedir Parecer.'],
+      tip:'Iniciativas pendentes há mais de 7 dias ficam marcadas a vermelho. Use "Pedir Esclarecimentos" (em Mais acções) para questionar o autor sem alterar o estado.'},
+    {title:'Aprovar savings',who:'Gestor (RD/RF)',color:'#4a7a5a',perfis:['Gestor','Mentor'],
+      steps:[
+        'Vá ao separador <strong>Gestor</strong>. Os savings pendentes aparecem no topo.',
+        'Clique na iniciativa em <span class="ui-hint neutral">Em Validação Savings</span>.',
+        'Verifique o tipo (Hard/Soft) e o valor declarado.',
+        'Clique em <span class="ui-hint">Aprovar Savings</span> para validar, ou <span class="ui-hint danger">Rejeitar</span> com justificação. Para outras opções, clique em <span class="ui-hint neutral">Mais acções</span>.'],
+      tip:'Após a sua aprovação, o Mentor fará a confirmação final antes de a iniciativa passar a Implementada.'},
+    {title:'Cancelar uma iniciativa',who:'Colaborador',color:'#9ac433',perfis:['Colaborador','Resp. Equipa','Mentor','Gestor'],
+      steps:[
+        'Abra o detalhe da iniciativa (clique na linha da tabela em <strong>Pessoal</strong>).',
+        'No rodapé do painel lateral, clique em <span class="ui-hint danger">Cancelar</span>.',
+        'Escreva a <strong>justificação</strong> (obrigatória).',
+        'Escolha entre <strong>Arquivar</strong> (fica no Catálogo) ou <strong>Apagar definitivamente</strong>.'],
+      tip:'Só pode cancelar iniciativas próprias. Iniciativas já implementadas não podem ser canceladas.'},
+    {title:'Comentar uma iniciativa',who:'Todos',color:'#536069',perfis:['Colaborador','Resp. Equipa','Mentor','Gestor','Executivo'],
+      steps:[
+        'Abra o detalhe de qualquer iniciativa (clique na linha da tabela).',
+        'No painel lateral, desça até à secção <strong>Comentários</strong>.',
+        'Escreva a sua mensagem. Use <strong>@nome</strong> para mencionar alguém (recebe notificação).',
+        'Para comentários privados, active o toggle <strong>Confidencial</strong> e seleccione quem pode ver (Mentor, Gestor, ou ambos).',
+        'Clique em <span class="ui-hint">Enviar</span>.'],
+      tip:'Comentários normais são visíveis para todos os envolvidos. Comentários confidenciais aparecem com fundo roxo e cadeado — úteis para discussões de governance entre Mentor e Gestor.'},
+    {title:'Pedir colaboração',who:'Colaborador, RE, Mentor, Gestor',color:'#9ac433',perfis:['Colaborador','Resp. Equipa','Mentor','Gestor'],
+      steps:[
+        'Abra o detalhe da iniciativa (própria ou de outro).',
+        'No rodapé do painel lateral, clique em <span class="ui-hint neutral">Mais acções</span> e seleccione <span class="ui-hint neutral">Pedir Colaboração</span>.',
+        'Seleccione o(s) colega(s) que pretende convidar — pode convidar vários.',
+        'Cada colega recebe o convite na secção <strong>Recebidos</strong> e pode aceitar ou <span class="ui-hint danger">Recusar</span> (é removido da lista).'],
+      tip:'Os seus pedidos enviados ficam visíveis na secção "Enviados" com o estado "A aguardar resposta".'},
+    {title:'Pedir parecer',who:'Mentor, Gestor',color:'#4a7a5a',perfis:['Mentor','Gestor'],
+      steps:[
+        'Abra o detalhe da iniciativa que está a validar.',
+        'No rodapé do painel lateral, clique em <span class="ui-hint neutral">Mais acções</span> e seleccione <span class="ui-hint neutral">Pedir Parecer</span>.',
+        'Seleccione o Mentor ou Gestor que pretende consultar.',
+        'O destinatário recebe o pedido na secção <strong>Recebidos</strong> e pode responder via comentário.'],
+      tip:'Use "Pedir Parecer" quando precisa de uma segunda opinião antes de aprovar ou rejeitar — por exemplo, consultar o RF sobre o cálculo de um saving.'},
+    {title:'Transferir uma iniciativa',who:'Colaborador (owner)',color:'#9ac433',perfis:['Colaborador','Resp. Equipa','Mentor','Gestor'],
+      steps:[
+        'Abra o detalhe da <strong>sua</strong> iniciativa (só o owner pode transferir).',
+        'No rodapé do painel lateral, clique em <span class="ui-hint neutral">Mais acções</span> e seleccione <span class="ui-hint neutral">Transferir</span>.',
+        'Seleccione o novo responsável.',
+        'O destinatário recebe o pedido na secção <strong>Recebidos</strong> e pode <span class="ui-hint">Aceitar</span> (torna-se o novo owner) ou <span class="ui-hint danger">Recusar</span> (a iniciativa volta a si).'],
+      tip:'Útil quando muda de equipa, entra de férias, ou o tema é mais adequado a outro colaborador.'},
+    {title:'Solicitar revisão',who:'Mentor, Gestor',color:'#4a7a5a',perfis:['Mentor','Gestor'],
+      steps:[
+        'Abra o detalhe da iniciativa em <span class="ui-hint neutral">Em Validação Projecto</span> ou <span class="ui-hint neutral">Em Validação Savings</span>.',
+        'No rodapé do painel, clique em <span class="ui-hint neutral">Mais acções</span> e seleccione <span class="ui-hint neutral">Solicitar Revisão</span>.',
+        'Escreva a <strong>justificação</strong> (obrigatória) — explique o que precisa de ser corrigido.',
+        'A iniciativa passa a <span class="ui-hint danger">Em Revisão</span> e volta ao separador <strong>Pessoal</strong> do colaborador.',
+        'O colaborador vê a justificação, pode <strong>Editar</strong> e depois <strong>Re-submeter</strong>.',
+        'Após re-submissão, a iniciativa volta à fila de validação seguindo o fluxo normal.'],
+      tip:'Use "Pedir Esclarecimentos" se só precisa de informação adicional sem devolver a iniciativa para edição. "Solicitar Revisão" implica que o colaborador deve alterar algo.'},
+    {title:'Rever e re-submeter',who:'Colaborador',color:'#dc2626',perfis:['Colaborador','Resp. Equipa'],
+      steps:[
+        'Vá ao separador <strong>Pessoal</strong>. As iniciativas a rever aparecem na secção <span class="ui-hint danger">A Rever</span> com fundo vermelho.',
+        'Leia a <strong>justificação</strong> do Mentor ou Gestor que solicitou a revisão.',
+        'Clique em <span class="ui-hint">Editar</span> para abrir o formulário pré-preenchido.',
+        'Faça as alterações pedidas e clique em <span class="ui-hint">Re-submeter</span>.',
+        'A iniciativa volta ao fluxo de validação normal.'],
+      tip:'Pode também cancelar a iniciativa se a revisão não fizer sentido, usando o botão Cancelar.'},
+    {title:'Consultar o Dashboard',who:'Todos',color:'#3a6060',perfis:['Colaborador','Resp. Equipa','Mentor','Gestor','Executivo'],
+      steps:[
+        'Clique no separador <strong>Dashboard</strong> na barra de navegação.',
+        'Consulte os <strong>KPIs</strong> no topo: total de iniciativas, em curso, implementadas e savings acumulados.',
+        'Use os <strong>filtros</strong> de período, equipa e estado para ajustar a vista.',
+        'Na tabela por equipa, clique no <strong>nome da equipa</strong> (▸) para expandir e ver os contadores por colaborador.',
+        'Clique num <strong>número</strong> na tabela para ver a lista de iniciativas correspondentes. Clique numa iniciativa para abrir o detalhe.'],
+      tip:'Colaboradores vêem apenas iniciativas não confidenciais. Responsáveis de Equipa e Gestores vêem todas as da sua equipa (incluindo confidenciais) e não confidenciais de outras. Mentores e Executivos vêem tudo. O drill-down por colaborador está disponível apenas para Mentor, Gestor e Executivo. Use o filtro "Minha Equipa" para focar na sua equipa.'}
+  ];
+  $('actionGuide').innerHTML=actions.map(a=>`<div class="action-card" data-perfis="${(a.perfis||[]).join(',')}" onclick="this.classList.toggle('open')"><div class="ac-header"><div class="ac-icon" style="background:${a.color}">?</div><div class="ac-header-text"><div class="ac-title">${a.title}</div><div class="ac-who">${a.who}</div></div><div class="ac-toggle">+</div></div><div class="ac-body"><div class="ac-body-inner"><div class="ac-steps">${a.steps.map(s=>`<div class="ac-step"><div class="ac-step-num"></div><div class="ac-step-text">${s}</div></div>`).join('')}</div>${a.tip?`<div class="ac-tip"><strong>Dica:</strong> ${a.tip}</div>`:''}</div></div></div>`).join('');
+
+  /* FAQ */
+  const faqs=[
+    {q:'O que é um saving Hard vs Soft?',a:'<strong>Hard Saving (P&amp;L)</strong> — impacta directamente a conta de resultados. Inclui: redução de OPEX (FTEs, contratos temporários, prestadores, horas extra, material de escritório) e aumento de NBI (crescimento de vendas — créditos, seguros, produtos complementares). Comparação com N-1 ou orçamento Ano N.<br><br><strong>Soft Saving (Non P&amp;L)</strong> — não impacta directamente o P&amp;L. Inclui: redução de risco de crédito (eficiência de cobrança, taxa de reincidência), custos e riscos evitados (recrutamento, coimas, penalizações, despesas previstas não incorridas) e melhoria de qualidade (satisfação do cliente, fidelização, imagem).<br><br><em>Routing:</em> Soft &lt; 10k€ → validação pelo RD. Hard ou ≥ 10k€ → validação pelo RF.'},
+    {q:'Posso editar após submissão?',a:'Após submissão, a iniciativa fica em leitura. Se o Mentor solicitar revisão, receberá uma notificação e poderá editar novamente.'},
+    {q:'Como funciona a confidencialidade de uma iniciativa?',a:'Ao marcar uma iniciativa como confidencial, apenas o autor, o Mentor atribuído e os Gestores envolvidos podem visualizá-la. Não aparece na lista geral.'},
+    {q:'O que acontece se a minha iniciativa for rejeitada?',a:'Recebe uma notificação com a justificação. A iniciativa fica arquivada mas pode servir de base para uma nova submissão.'},
+    {q:'Como sei que tenho acções pendentes?',a:'O separador Início mostra as suas pendências. Os tabs Mentoria e Gestor mostram contadores junto ao nome quando há itens por despachar.'},
+    {q:'Onde vejo o histórico de iniciativas concluídas?',a:'No separador Catálogo. Pode alternar entre "Implementadas" e "Arquivadas", e exportar para Excel.'},
+    {q:'Qual a diferença entre Partilha, Colaboração e Transferência?',a:'<strong>Partilha</strong> — acesso de leitura. Alguém partilhou a iniciativa consigo para consulta, sem acção necessária.<br><br><strong>Colaboração</strong> — convite activo para contribuir na execução. Pode recusar se não for relevante.<br><br><strong>Transferência</strong> — mudança de ownership. Apenas o owner pode iniciar. O destinatário pode aceitar ou recusar (devolve ao remetente).<br><br><strong>Pedir Parecer</strong> — consulta entre Mentores/Gestores no contexto de validação, sem transferir responsabilidade.'},
+    {q:'Quem pode ver os comentários confidenciais?',a:'Apenas os perfis seleccionados pelo autor (Mentor, Gestor, ou ambos). Aparecem com fundo roxo e ícone de cadeado. O colaborador/owner não vê comentários confidenciais entre Mentor e Gestor.'},
+  ];
+  $('faqList').innerHTML=faqs.map(f=>`<div class="faq-item" onclick="this.classList.toggle('open')"><div class="faq-q"><span>${f.q}</span><span class="faq-toggle">+</span></div><div class="faq-a"><p>${f.a}</p></div></div>`).join('');
+}
+
+/* ── Pessoal ── */
+function renderPessoal(){
+  const mine=DB.filter(d=>d.colab===USER);
+  const drafts=mine.filter(d=>d.estado===E.RASC);
+  const pending=mine.filter(d=>d.estado===E.VAL_PROJ||d.estado===E.VAL_SAV);
+  const revisions=mine.filter(d=>d.estado===E.REVISAO);
+  const active=mine.filter(d=>![E.RASC,E.VAL_PROJ,E.VAL_SAV,E.REVISAO].includes(d.estado));
+  const actionsBox=$('myActions');
+  if(drafts.length||pending.length){
+    actionsBox.style.display='';
+    renderPendingList('myDraftList',drafts,'pessoal',{
+      showDays:true,btnLabel:'Editar',
+      metaFn:d=>`${d.equipa} &middot; ${d.saving}`
+    });
+    renderPendingList('myPendingList',pending,'pessoal',{
+      showDays:true,btnLabel:'Ver',
+      metaFn:d=>`${d.equipa} &middot; ${d.estado}`
+    });
+  }else{
+    actionsBox.style.display='none';
+  }
+  const revBox=$('revisionSection');
+  if(revisions.length){
+    revBox.style.display='';
+    $('revisionList').innerHTML=revisions.map(d=>{
+      const r=d.revisao||{};
+      return`<div class="pending-item urgent" onclick="openPanel('${d.code}','pessoal')" style="border-left:3px solid #dc2626;">
+        <div class="pi-body">
+          <div class="pi-code">${d.code}</div>
+          <div class="pi-title">${d.title}</div>
+          <div class="pi-meta">${r.perfil||'—'}: ${r.por||'—'} &middot; ${r.data||'—'}</div>
+          <div style="font-size:12px;color:var(--text-sec);margin-top:6px;line-height:1.5;background:#fef2f2;padding:8px 10px;border-radius:4px;"><strong>Justificação:</strong> ${r.motivo||'—'}</div>
+        </div>
+        <div class="pi-right">
+          <button class="btn-sm" onclick="event.stopPropagation();openEditModal('${d.code}')">Editar</button>
+        </div>
+      </div>`;
+    }).join('');
+  }else{
+    revBox.style.display='none';
+  }
+  renderTable('myTable',active,COLS_MY,'pessoal','my-row');
+  renderCollabs('collabTableIn','collabTableOut','collabSection','pessoal');
+  renderOthers();
+}
+function renderOthers(){
+  filteredRender({
+    data:DB.filter(d=>d.colab!==USER),
+    filters:[{id:'fEst',key:'estado'},{id:'fSav',key:'saving'}],
+    searchId:'fSearch',countId:'fCount',
+    targetId:'othersTable',columns:COLS_OTHERS,ctx:'pessoal'
+  });
+}
+function clearF(){$('fEst').value='';$('fSav').value='';$('fSearch').value='';renderOthers();}
+['fEst','fSav','fSearch'].forEach(id=>{const el=$(id);el.addEventListener('input',renderOthers);el.addEventListener('change',renderOthers);});
+
+/* ── Mentoria ── */
+function renderMentoria(){
+  renderPendingList('mValProj',DB.filter(d=>d.estado===E.VAL_PROJ),'mentoria',{
+    showDays:true,btnLabel:'Validar',
+    metaFn:d=>`${d.colab} &middot; ${d.equipa} &middot; Mentor: ${getMentor(d)}`
+  });
+  renderPendingList('mValSav',DB.filter(d=>d.estado===E.VAL_SAV),'mentoria',{
+    showDays:false,btnLabel:'Confirmar',
+    metaFn:d=>`${d.colab} &middot; ${d.equipa} &middot; Gestor: ${getGestor(d)}`
+  });
+  renderMTable();
+  renderCollabs('mCollabTableIn','mCollabTableOut','mCollabSection','mentoria',MENTOR_COLLABS);
+}
+function renderMTable(){
+  filteredRender({
+    data:[...DB],
+    filters:[{id:'mfEst',key:'estado'}],
+    searchId:'mfSearch',countId:'mfCount',
+    targetId:'mTable',columns:COLS_MENTOR,ctx:'mentoria'
+  });
+}
+function clearMF(){$('mfEst').value='';$('mfSearch').value='';renderMTable();}
+['mfEst','mfSearch'].forEach(id=>{const el=$(id);el.addEventListener('input',renderMTable);el.addEventListener('change',renderMTable);});
+
+/* ── Gestor ── */
+function renderGestor(){
+  const pending=DB.filter(d=>d.estado===E.VAL_SAV);
+  const half=Math.ceil(pending.length/2);
+  const opts={showDays:false,btnLabel:'Aprovar',metaFn:d=>`${d.colab} &middot; ${d.equipa} &middot; ${d.valor}`};
+  renderPendingList('gColLeft',pending.slice(0,half),'gestor',opts);
+  renderPendingList('gColRight',pending.slice(half),'gestor',opts);
+  renderCollabs('gCollabTableIn','gCollabTableOut','gCollabSection','gestor');
+  renderTable('gTable',DB.filter(d=>d.estado===E.VAL_SAV||d.estado===E.IMPL),COLS_GESTOR,'gestor');
+}
+
+/* ── Colaborações ── */
+const TIPO_LABEL={colaboracao:'Colaboração',partilha:'Partilha',transferencia:'Transferência',pedido_recebido:'Pedido',pedido_enviado:'Pedido'};
+const TIPO_CHIP={colaboracao:'chip-active',partilha:'chip-inactive',transferencia:'chip-pending',pedido_recebido:'chip-pending',pedido_enviado:'chip-inactive'};
+function renderCollabRow(c,ctx){
+  const d=DB.find(x=>x.code===c.code);if(!d)return'';
+  const label=TIPO_LABEL[c.tipo]||c.tipo;
+  const chip=TIPO_CHIP[c.tipo]||'chip-inactive';
+  let actions=`<button class="btn-outline" style="font-size:11px;padding:4px 10px;" onclick="event.stopPropagation();openPanel('${d.code}','${ctx}')">Ver</button> `;
+  if(c.tipo==='colaboracao'){
+    actions+=`<button class="btn-danger" style="font-size:11px;padding:4px 10px;" onclick="event.stopPropagation();alert('Colaboração recusada — removido da lista (mockup).')">Recusar</button>`;
+  }else if(c.tipo==='transferencia'){
+    actions+=`<button class="btn-nova" style="font-size:11px;padding:6px 12px;" onclick="event.stopPropagation();alert('Transferência aceite (mockup).')">Aceitar</button> `;
+    actions+=`<button class="btn-danger" style="font-size:11px;padding:4px 10px;" onclick="event.stopPropagation();alert('Transferência recusada — devolvida a ${c.by} (mockup).')">Recusar</button>`;
+  }else if(c.tipo==='pedido_recebido'){
+    actions+=`<button class="btn-nova" style="font-size:11px;padding:6px 12px;" onclick="event.stopPropagation();alert('Colaboração aceite (mockup).')">Aceitar</button> `;
+    actions+=`<button class="btn-danger" style="font-size:11px;padding:4px 10px;" onclick="event.stopPropagation();alert('Pedido recusado (mockup).')">Recusar</button>`;
+  }
+  return`<tr onclick="openPanel('${d.code}','${ctx}')"><td class="col-code">${d.code}</td><td class="col-title">${d.title}</td><td><span class="chip ${chip}">${label}</span></td><td>${c.by}</td><td>${d.equipa}</td><td>${actions}</td></tr>`;
+}
+function renderCollabs(inId,outId,sectionId,ctx,data){
+  const box=$(sectionId);
+  const items=data||COLLABS;
+  const received=items.filter(c=>c.tipo!=='pedido_enviado');
+  const sent=items.filter(c=>c.tipo==='pedido_enviado');
+  if(!received.length&&!sent.length){box.style.display='none';return;}
+  box.style.display='';
+  $(inId).innerHTML=received.map(c=>renderCollabRow(c,ctx)).filter(Boolean).join('')||'<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:14px;">Sem itens</td></tr>';
+  $(outId).innerHTML=sent.map(c=>{
+    const d=DB.find(x=>x.code===c.code);if(!d)return'';
+    return`<tr onclick="openPanel('${d.code}','${ctx}')"><td class="col-code">${d.code}</td><td class="col-title">${d.title}</td><td><span class="chip chip-inactive">Pedido</span></td><td>${c.para||d.colab}</td><td>${d.equipa}</td><td><span style="font-size:11px;color:var(--text-muted);">A aguardar resposta</span></td></tr>`;
+  }).filter(Boolean).join('')||'<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:14px;">Sem pedidos enviados</td></tr>';
+}
+
+/* ── Catálogo ── */
+function renderCatalogo(){renderCatTable();}
+function setCat(v){catView=v;$('tI').classList.toggle('active',v==='impl');$('tA').classList.toggle('active',v==='arq');renderCatTable();}
+function renderCatTable(){
+  renderTable('catTable',DB.filter(d=>d.estado===(catView==='impl'?E.IMPL:E.CANCEL)),COLS_CAT,'catalogo');
+}
+
+/* ── CSV Exports ── */
+function downloadCSV(csv,filename){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'}));
+  a.download=filename;a.click();
+}
+function exportDBtoCSV(filename,items,headers,rowFn){
+  downloadCSV(headers+'\n'+items.map(rowFn).join('\n')+'\n',filename);
+}
+const DB_CSV_HEADERS='Código;Iniciativa;Estado;Colaborador;Equipa;Saving;Valor;Data;Mentor;Gestor';
+const DB_CSV_ROW=d=>`${d.code};${d.title};${d.estado};${d.colab};${d.equipa};${d.saving};${d.valor};${d.data};${getMentor(d)};${getGestor(d)}`;
+function exportCSV(){
+  exportDBtoCSV('catalogo_place.csv',
+    DB.filter(d=>d.estado===(catView==='impl'?E.IMPL:E.CANCEL)),
+    'Código;Iniciativa;Estado;Colaborador;Equipa;Saving;Valor;Data',
+    d=>`${d.code};${d.title};${d.estado};${d.colab};${d.equipa};${d.saving};${d.valor};${d.data}`
+  );
+}
+
+/* ── Action Helpers ── */
+function promptAction(msg,onConfirm){
+  const reason=prompt(msg);
+  if(reason===null)return;
+  if(reason.trim()===''){alert('É necessário indicar uma justificação.');return;}
+  onConfirm(reason);
+}
+function cancelInit(code){
+  promptAction('Justificação para cancelamento:',reason=>{
+    const action=confirm('Deseja arquivar a iniciativa? (OK = Arquivar, Cancelar = Apagar definitivamente)');
+    alert((action?'Iniciativa arquivada':'Iniciativa apagada definitivamente')+' (mockup). Justificação: '+reason);
+    closePanel();
+  });
+}
+function rejectInit(code){
+  promptAction('Justificação para rejeição:',reason=>{
+    alert('Iniciativa rejeitada (mockup). Justificação: '+reason);
+    closePanel();
+  });
+}
+function askClarification(){
+  const msg=prompt('Mensagem de esclarecimento:');
+  if(msg===null)return;
+  if(msg.trim()===''){alert('Escreva uma mensagem.');return;}
+  alert('Esclarecimento enviado ao owner (mockup). O estado da iniciativa não foi alterado.');
+}
+function openEditModal(code){
+  const d=DB.find(x=>x.code===code);if(!d)return;
+  closePanel();openModal();
+  setTimeout(()=>{
+    $('fTit').value=d.title;$('fDesc').value=d.desc||'';
+    $('fProb').value=d.problema||'';$('fObj').value=d.objetivo||'';
+    $('fEq').value=d.equipa||'';$('fSavT').value=d.saving||'Sem saving';
+    toggleEst();
+    if(d.valor&&d.valor!=='—')$('fEstV').value=d.valor;
+  },150);
+}
+
+/* ── Side Panel ── */
+function openPanel(code,ctx){
+  const d=DB.find(x=>x.code===code);if(!d)return;
+  $('pCode').textContent=d.code;
+  $('pTitle').textContent=d.title;
+  $('pChips').innerHTML=`
+    <span class="chip ${chipCls(d.estado)}">${d.estado}</span>
+    <span class="chip chip-inactive">${d.equipa}</span>
+    ${d.conf ? '<span class="chip-conf">Confidencial</span>' : ''}
+  `;
+
+  const si=ST.indexOf(d.estado);
+  let h=`<div class="pn-sec"><div class="pn-sec-title">Dados Gerais</div><div class="pn-grid"><div><div class="pn-field-label">Colaborador</div><div class="pn-field-val">${d.colab}</div></div><div><div class="pn-field-label">Equipa</div><div class="pn-field-val">${d.equipa}</div></div><div><div class="pn-field-label">Mentor Responsável</div><div class="pn-field-val">${getMentor(d)}</div></div><div><div class="pn-field-label">Data</div><div class="pn-field-val">${fmtD(d.data)}</div></div><div><div class="pn-field-label">Gestor Validador</div><div class="pn-field-val">${getGestor(d)}</div></div><div><div class="pn-field-label">Routing</div><div class="pn-field-val" style="font-size:11px;color:var(--text-muted);">Atribuído automaticamente pela equipa</div></div>${d.dataImpl?`<div><div class="pn-field-label">Implementado</div><div class="pn-field-val" style="color:var(--green);font-weight:600;">${fmtD(d.dataImpl)}</div></div>`:''}</div>`;
+  if(d.desc)h+=`<div class="pn-desc"><strong>Descrição:</strong> ${d.desc}</div>`;
+  if(d.problema)h+=`<div class="pn-desc"><strong>Problema:</strong> ${d.problema}</div>`;
+  if(d.objetivo)h+=`<div class="pn-desc"><strong>Objectivo:</strong> ${d.objetivo}</div>`;
+  h+=`</div>`;
+
+  if(d.saving!=='Sem saving'){
+    h+=`<div class="pn-sec"><div class="pn-sec-title">Savings</div><div class="pn-savings"><div class="pn-sav-type">${d.saving}</div><div class="pn-sav-val">${d.valor}</div></div>`;
+    if(d.nota)h+=`<div class="pn-sav-note">${d.nota}</div>`;
+    h+=`</div>`;
+  }
+
+  h+=`<div class="pn-sec"><div class="pn-sec-title">Progresso</div><div class="timeline">`;
+  ST.forEach((s,i)=>{
+    let cls=i<si?'done':i===si?'active':'';
+    if(d.estado===E.CANCEL)cls='';
+    h+=`<div class="tl-item"><div class="tl-dot ${cls}"></div><div class="tl-label">${s}</div><div class="tl-meta">${cls==='done'?'Concluído':cls==='active'?'Estado actual':'Pendente'}</div></div>`;
+  });
+  if(d.estado===E.CANCEL)h+=`<div class="tl-item"><div class="tl-dot done" style="background:var(--red);border-color:var(--red);"></div><div class="tl-label">Cancelado</div><div class="tl-meta">Estado final</div></div>`;
+  h+=`</div></div>`;
+
+  h+=`<div class="pn-sec"><div class="pn-sec-title">Comentários</div>`;
+  h+=COMMENTS.map(c=>{
+    const wrap=c.conf?'comment-conf':'';
+    const confLabel=c.conf?`<div class="comment-conf-label">Visível: ${c.conf}</div>`:'';
+    return`<div class="${wrap}"><div class="comment"><div class="comment-av">${c.i}</div><div><span class="comment-author">${c.a}</span><span class="comment-date">${c.d}</span>${confLabel}<div class="comment-text">${c.t}</div></div></div></div>`;
+  }).join('');
+  h+=`<div class="comment-input-row"><input type="text" placeholder="Escrever comentário... use @nome para mencionar"><button class="btn-sm">Enviar</button></div>`;
+  h+=`<div style="display:flex;gap:8px;align-items:center;margin-top:6px;"><label class="comment-conf-toggle"><input type="checkbox" id="confComment"> Confidencial</label><select class="comment-vis-select" id="confVis" style="display:none;"><option>Mentor</option><option>Gestor</option><option>Mentor, Gestor</option></select></div></div>`;
+
+  $('pBody').innerHTML=h;
+
+  let foot = '';
+  let drops = []; // secondary actions go into "Mais acções" dropdown
+  const isOwner = d.colab === USER;
+  const drop = (label, action) => drops.push({label, action});
+
+  // Primary + destructive buttons (max 2-3 visible)
+  if (ctx === 'pessoal' && isOwner) {
+    if (d.estado===E.RASC) {
+      foot += `<button class="btn-nova" onclick="alert('Iniciativa submetida para validação (mockup).')">Submeter</button>`;
+      drop('Editar', `openEditModal('${d.code}')`);
+      foot += `<button class="btn-danger" onclick="cancelInit('${d.code}')">Cancelar</button>`;
+    } else if (d.estado===E.EXEC) {
+      foot += `<button class="btn-nova" onclick="alert('Implementação declarada (mockup).')">Declarar Implementação</button>`;
+      foot += `<button class="btn-danger" onclick="cancelInit('${d.code}')">Cancelar</button>`;
+    } else if (d.estado===E.REVISAO) {
+      foot += `<button class="btn-nova" onclick="alert('Iniciativa re-submetida para validação (mockup).')">Re-submeter</button>`;
+      drop('Editar', `openEditModal('${d.code}')`);
+      foot += `<button class="btn-danger" onclick="cancelInit('${d.code}')">Cancelar</button>`;
+    } else if (d.estado===E.VAL_PROJ || d.estado===E.VAL_SAV) {
+      foot += `<span style="font-size:12px;color:var(--text-muted);padding:8px 0;">A aguardar validação</span>`;
+      foot += `<button class="btn-danger" onclick="cancelInit('${d.code}')">Cancelar</button>`;
+    } else if (d.estado===E.IMPL) {
+      foot += `<span style="font-size:12px;color:var(--green);padding:8px 0;">Iniciativa concluída</span>`;
+    } else if (d.estado===E.CANCEL) {
+      foot += `<span style="font-size:12px;color:var(--text-muted);padding:8px 0;">Iniciativa cancelada</span>`;
+    }
+  } else if (ctx === 'mentoria') {
+    if (d.estado===E.VAL_PROJ) {
+      foot += `<button class="btn-nova" onclick="alert('Projecto aprovado (mockup).')">Aprovar</button>`;
+      foot += `<button class="btn-danger" onclick="rejectInit('${d.code}')">Rejeitar</button>`;
+      drop('Solicitar Revisão', `alert('Revisão solicitada (mockup).')`);
+      drop('Pedir Esclarecimentos', `askClarification()`);
+    } else if (d.estado===E.VAL_SAV) {
+      foot += `<button class="btn-nova" onclick="alert('Saving confirmado (mockup).')">Confirmar Saving</button>`;
+      foot += `<button class="btn-danger" onclick="rejectInit('${d.code}')">Rejeitar</button>`;
+      drop('Solicitar Revisão', `promptAction('Justificação para revisão:',r=>{alert('Revisão solicitada ao colaborador (mockup). Motivo: '+r);closePanel();})`);
+      drop('Pedir Esclarecimentos', `askClarification()`);
+    } else {
+      drop('Pedir Esclarecimentos', `askClarification()`);
+    }
+  } else if (ctx === 'gestor') {
+    if (d.estado===E.VAL_SAV) {
+      foot += `<button class="btn-nova" onclick="alert('Savings aprovados (mockup).')">Aprovar Savings</button>`;
+      foot += `<button class="btn-danger" onclick="rejectInit('${d.code}')">Rejeitar</button>`;
+      drop('Solicitar Revisão', `promptAction('Justificação para revisão:',r=>{alert('Revisão solicitada ao colaborador (mockup). Motivo: '+r);closePanel();})`);
+      drop('Pedir Esclarecimentos', `askClarification()`);
+    }
+  }
+
+  // Secondary actions → dropdown
+  if(ctx!=='dashboard'){
+    if(ctx==='mentoria'||ctx==='gestor'){
+      drop('Pedir Parecer', `alert('Pedido de parecer enviado (mockup).')`);
+    }else{
+      drop('Pedir Colaboração', `alert('Pedido de colaboração enviado (mockup).')`);
+    }
+    if(isOwner) drop('Transferir', `alert('Pedido de transferência enviado (mockup).')`);
+  }
+  drop('Partilhar', `alert('Link copiado (mockup).')`);
+
+  // Render dropdown if there are secondary actions
+  if(drops.length){
+    foot+=`<div class="pn-more" id="pnMore"><button class="pn-more-btn" onclick="toggleMoreMenu()">Mais acções</button><div class="pn-dropdown">`;
+    drops.forEach(a=>{foot+=`<button class="pn-drop-item" onclick="toggleMoreMenu();${a.action}">${a.label}</button>`;});
+    foot+=`</div></div>`;
+  }
+
+  $('pFoot').innerHTML=foot;
+
+  $('ov').classList.add('open');
+  $('pn').classList.add('open');
+  setTimeout(()=>{
+    const cb=$('confComment');
+    const sel=$('confVis');
+    if(cb&&sel)cb.addEventListener('change',()=>{sel.style.display=cb.checked?'':'none';});
+  },50);
+}
+function closePanel(){$('ov').classList.remove('open');$('pn').classList.remove('open');}
+function toggleMoreMenu(){const m=$('pnMore');if(m)m.classList.toggle('open');}
+document.addEventListener('click',e=>{const m=$('pnMore');if(m&&m.classList.contains('open')&&!m.contains(e.target))m.classList.remove('open');});
+
+/* ── Modal ── */
+function resetForm(){
+  $('fTit').value='';
+  $('fDesc').value='';
+  $('fEq').value='';
+  $('fSavT').value='Sem saving';
+  $('fEstV').value='';
+  $('fEstGrp').classList.add('hidden');
+  $('fProb').value='';
+  $('fObj').value='';
+  $('fConf').checked=false;
+}
+function openModal(){
+  resetForm();
+  $('modalBg').classList.add('open');
+  setTimeout(()=>$('fTit').focus(),100);
+}
+function closeModal(){$('modalBg').classList.remove('open');}
+function toggleEst(){$('fEstGrp').classList.toggle('hidden',$('fSavT').value==='Sem saving');}
+function createInitFromForm(estado){
+  const titulo=$('fTit').value.trim();
+  const equipa=$('fEq').value;
+  if(!titulo){alert('O título é obrigatório.');return false;}
+  if(!equipa){alert('Seleccione uma equipa.');return false;}
+  const now=new Date();
+  const dataStr=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+  const saving=$('fSavT').value;
+  const estVal=$('fEstV').value.trim();
+  const code='PDCA-'+String(50+DB.length).padStart(3,'0');
+  DB.push({
+    code,title:titulo,estado,colab:USER,equipa,saving,
+    valor:estVal?'€'+estVal:'—',data:dataStr,
+    desc:$('fDesc').value.trim(),problema:$('fProb').value.trim(),
+    objetivo:$('fObj').value.trim(),gestor:'—',conf:$('fConf').checked
+  });
+  return code;
+}
+function saveRascunho(){
+  const code=createInitFromForm(E.RASC);
+  if(!code)return;
+  alert('Rascunho '+code+' gravado com sucesso.');
+  closeModal();switchTab('pessoal');
+}
+function submitIniciativa(){
+  const code=createInitFromForm(E.VAL_PROJ);
+  if(!code)return;
+  alert('Iniciativa '+code+' submetida para validação.');
+  closeModal();switchTab('pessoal');
+}
+
+$('modalBg').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+/* ── Keyboard ── */
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if($('modalBg').classList.contains('open'))closeModal();else if($('pn').classList.contains('open'))closePanel();}});
+
+/* ── Admin / Configuração ── */
+const USERS_DB = [
+  {nome:'Rafael Lopes', equipa:'Dir. Comercial', perfil:'Colaborador', email:'rafael.lopes@cetelem.pt'},
+  {nome:'Amadeu Mendes', equipa:'Operações', perfil:'Colaborador', email:'amadeu.mendes@cetelem.pt'},
+  {nome:'Gil Gaspar', equipa:'Digital', perfil:'Colaborador', email:'gil.gaspar@cetelem.pt'},
+  {nome:'Sofia Rodrigues', equipa:'Risco', perfil:'Colaborador', email:'sofia.rodrigues@cetelem.pt'},
+  {nome:'Inês Carvalho', equipa:'Dir. Comercial', perfil:'Colaborador', email:'ines.carvalho@cetelem.pt'},
+  {nome:'Carlos Mendes', equipa:'Operações', perfil:'Colaborador', email:'carlos.mendes@cetelem.pt'},
+  {nome:'Beatriz Pinto', equipa:'Digital', perfil:'Colaborador', email:'beatriz.pinto@cetelem.pt'},
+  {nome:'Tiago Nunes', equipa:'Financeiro', perfil:'Colaborador', email:'tiago.nunes@cetelem.pt'},
+  {nome:'Hugo Pires', equipa:'Operações', perfil:'Colaborador', email:'hugo.pires@cetelem.pt'},
+  {nome:'Nuno Almeida', equipa:'Financeiro', perfil:'Colaborador', email:'nuno.almeida@cetelem.pt'},
+  {nome:'Vera Simões', equipa:'Risco', perfil:'Colaborador', email:'vera.simoes@cetelem.pt'},
+  {nome:'Miguel Santos', equipa:'Dir. Comercial', perfil:'Resp. Equipa', email:'miguel.santos@cetelem.pt', reEquipa:'Dir. Comercial'},
+  {nome:'Teresa Oliveira', equipa:'Operações', perfil:'Resp. Equipa', email:'teresa.oliveira@cetelem.pt', reEquipa:'Operações'},
+  {nome:'Paulo Ferreira', equipa:'Digital', perfil:'Resp. Equipa', email:'paulo.ferreira@cetelem.pt', reEquipa:'Digital'},
+  {nome:'Sandra Rocha', equipa:'Risco', perfil:'Resp. Equipa', email:'sandra.rocha@cetelem.pt', reEquipa:'Risco'},
+  {nome:'Jorge Martins', equipa:'Financeiro', perfil:'Resp. Equipa', email:'jorge.martins@cetelem.pt', reEquipa:'Financeiro'},
+  {nome:'Patrícia Vitorino', equipa:'Dir. Comercial', perfil:'Gestor', email:'patricia.vitorino@cetelem.pt', validaSavings:'Hard', validaEquipas:'Dir. Comercial'},
+  {nome:'Pedro Lopes', equipa:'Operações', perfil:'Gestor', email:'pedro.lopes@cetelem.pt', validaSavings:'Soft', validaEquipas:'Operações'},
+  {nome:'Ana Correia', equipa:'Digital', perfil:'Gestor', email:'ana.correia@cetelem.pt', validaSavings:'Soft', validaEquipas:'Digital'},
+  {nome:'Luísa Costa', equipa:'Financeiro', perfil:'Gestor', email:'luisa.costa@cetelem.pt', validaSavings:'Hard', validaEquipas:'Risco, Financeiro'},
+  {nome:'Diogo Legatheaux', equipa:'Transversal', perfil:'Mentor', email:'diogo.legatheaux@cetelem.pt', mentorEquipas:'Dir. Comercial, Digital'},
+  {nome:'Joana Boto', equipa:'Transversal', perfil:'Mentor', email:'joana.boto@cetelem.pt', mentorEquipas:'Operações, Financeiro', reEquipa:'Operações'},
+  {nome:'Patrícia Peixoto', equipa:'Transversal', perfil:'Mentor', email:'patricia.peixoto@cetelem.pt', mentorEquipas:'Risco'},
+  {nome:'Andy Crighton', equipa:'CEO', perfil:'Executivo', email:'andy.crighton@cetelem.pt'},
+  {nome:'Maria Fernandes', equipa:'Operações', perfil:'Executivo', email:'maria.fernandes@cetelem.pt', validaSavings:'Hard', validaEquipas:'Operações'},
+  {nome:'Ricardo Tavares', equipa:'Digital', perfil:'Executivo', email:'ricardo.tavares@cetelem.pt', validaSavings:'Soft', validaEquipas:'Digital'},
+];
+
+const ADMIN_FILTER_IDS=['adminFilterPerfil','adminFilterEquipa','adminFilterSavings','adminSearch'];
+const PERFIL_CHIP={Mentor:'chip-active',Gestor:'chip-pending',Executivo:'chip-done','Resp. Equipa':'chip-pending'};
+
+function clearAdminF(){ADMIN_FILTER_IDS.forEach(id=>$(id).value='');renderAdmin();}
+function renderAdmin(){
+  const perfil=$('adminFilterPerfil').value;
+  const equipa=$('adminFilterEquipa').value;
+  const savings=$('adminFilterSavings').value;
+  const s=$('adminSearch').value.toLowerCase();
+  let list=[...USERS_DB];
+  if(perfil)list=list.filter(u=>u.perfil===perfil);
+  if(equipa)list=list.filter(u=>u.equipa===equipa||(u.validaEquipas&&u.validaEquipas.includes(equipa))||(u.mentorEquipas&&u.mentorEquipas.includes(equipa))||(u.reEquipa&&u.reEquipa.includes(equipa)));
+  if(savings)list=list.filter(u=>u.validaSavings&&u.validaSavings.includes(savings));
+  if(s)list=list.filter(u=>u.nome.toLowerCase().includes(s));
+  $('adminCount').textContent=list.length+' utilizadores';
+
+  $('adminTable').innerHTML=list.map(u=>{
+    let actions='—';
+    if(u.perfil==='Colaborador')actions=`<button class="btn-outline" style="font-size:11px;padding:4px 10px;" onclick="alert('${u.nome} promovido a Mentor (mockup).')">Tornar Mentor</button>`;
+    else if(u.perfil==='Mentor')actions=`<button class="btn-danger" style="font-size:11px;padding:4px 10px;" onclick="alert('${u.nome} removido como Mentor (mockup).')">Remover Mentor</button>`;
+    return`<tr>
+      <td style="font-weight:500;">${u.nome}</td>
+      <td>${u.equipa}</td>
+      <td><span class="chip ${PERFIL_CHIP[u.perfil]||'chip-inactive'}">${u.perfil}</span>${u.reEquipa?` <span class="chip ${PERFIL_CHIP['Resp. Equipa']||'chip-inactive'}">RE</span>`:''}</td>
+      <td style="font-size:12px;">${u.validaSavings||'—'}</td>
+      <td style="font-size:12px;">${[u.mentorEquipas,u.validaEquipas,u.reEquipa?'RE: '+u.reEquipa:null].filter(Boolean).join(' · ')||'—'}</td>
+      <td style="font-size:12px;color:var(--text-sec);">${u.email}</td>
+      <td>${actions}</td>
+    </tr>`;
+  }).join('');
+}
+
+function exportPessoalCSV(){exportDBtoCSV('place_iniciativas.csv',DB,DB_CSV_HEADERS,DB_CSV_ROW);}
+function exportMentoriaCSV(){exportDBtoCSV('place_mentoria.csv',DB,DB_CSV_HEADERS,DB_CSV_ROW);}
+function exportAdminCSV(){
+  exportDBtoCSV('place_utilizadores.csv',USERS_DB,
+    'Nome;Equipa;Perfil;Valida Savings;Equipas Atribuídas;Email',
+    u=>`${u.nome};${u.equipa};${u.perfil};${u.validaSavings||''};${u.mentorEquipas||u.validaEquipas||''};${u.email}`
+  );
+}
+
+/* ── Dashboard ── */
+const EQUIPAS=['Dir. Comercial','Operações','Digital','Risco','Financeiro'];
+const USER_EQUIPA=(USERS_DB.find(u=>u.nome===USER)||{}).equipa||'Dir. Comercial';
+const _drillOpen=new Set();
+let _initDrill=null; // {equipa,colab(optional),stateKey} — tracks which cell is showing initiatives
+let _dashScope='todas'; // 'todas' or 'minha'
+
+const STATE_KEYS={total:null,rasc:E.RASC,val:E.VAL_PROJ,exec:E.EXEC,valSav:E.VAL_SAV,rev:E.REVISAO,impl:E.IMPL,cancel:E.CANCEL};
+const STATE_LABELS={total:'Todas',rasc:'Rascunho',val:'Validação Projecto',exec:'Execução',valSav:'Validação Savings',rev:'Em Revisão',impl:'Implementadas',cancel:'Canceladas'};
+
+function parseVal(v){const m=(v||'').replace(/[^\d.,]/g,'').replace('.','').replace(',','.');return parseFloat(m)||0;}
+
+function setDashScope(scope){
+  _dashScope=scope;
+  const btns=$('mfScope').querySelectorAll('.toggle-btn');
+  btns[0].classList.toggle('active',scope==='todas');
+  btns[1].classList.toggle('active',scope==='minha');
+  // When "Minha Equipa", override equipa filter
+  if(scope==='minha'){$('mfEquipa').value=USER_EQUIPA;$('mfEquipa').disabled=true;}
+  else{$('mfEquipa').value='';$('mfEquipa').disabled=false;}
+  _initDrill=null;
+  renderDashboard();
+}
+
+function filterByPeriod(list){
+  const months=$('mfPeriodo').value;
+  if(!months)return list;
+  const cutoff=new Date(TODAY);cutoff.setMonth(cutoff.getMonth()-parseInt(months));
+  return list.filter(d=>new Date(d.data)>=cutoff);
+}
+function getFilteredDB(){
+  let list=[...DB];
+  list=filterByPeriod(list);
+  const eq=$('mfEquipa').value;if(eq)list=list.filter(d=>d.equipa===eq);
+  const est=$('mfEstado').value;if(est)list=list.filter(d=>d.estado===est);
+  return list;
+}
+
+function countByState(list){
+  return{
+    total:list.length,
+    rasc:list.filter(d=>d.estado===E.RASC).length,
+    val:list.filter(d=>d.estado===E.VAL_PROJ).length,
+    exec:list.filter(d=>d.estado===E.EXEC).length,
+    valSav:list.filter(d=>d.estado===E.VAL_SAV).length,
+    rev:list.filter(d=>d.estado===E.REVISAO).length,
+    impl:list.filter(d=>d.estado===E.IMPL).length,
+    cancel:list.filter(d=>d.estado===E.CANCEL).length
+  };
+}
+
+function heatClass(n,max){
+  if(!n||!max)return'heat-0';
+  const ratio=n/max;
+  if(ratio<=0)return'heat-0';
+  if(ratio<=0.15)return'heat-1';
+  if(ratio<=0.30)return'heat-2';
+  if(ratio<=0.50)return'heat-3';
+  if(ratio<=0.75)return'heat-4';
+  return'heat-5';
+}
+
+function metricCell(n,heat,equipa,colab,stateKey){
+  const cls=['metric-val',heat];
+  const hasItems=n>0;
+  if(hasItems)cls.push('clickable');
+  const esc=s=>(s||'').replace(/'/g,"\\'");
+  const click=hasItems?` onclick="event.stopPropagation();drillInitiatives('${esc(equipa)}','${esc(colab||'')}','${stateKey}')"`:'' ;
+  return`<td class="${cls.join(' ')}"${click}>${n||'—'}</td>`;
+}
+
+function renderDashboard(){
+  const list=getFilteredDB();
+  const c=countByState(list);
+  const emCurso=c.val+c.exec+c.valSav;
+  const savings=list.filter(d=>d.estado===E.IMPL).reduce((s,d)=>s+parseVal(d.valor),0);
+
+  $('mKpiTotal').textContent=c.total;
+  $('mKpiCurso').textContent=emCurso;
+  $('mKpiImpl').textContent=c.impl;
+  $('mKpiSavings').textContent=savings?'€'+savings.toLocaleString('pt-PT'):'€0';
+  $('mfTotal').textContent=list.length+' iniciativas';
+
+  // Calculate max for heat map scale
+  const allCounts=[];
+  EQUIPAS.forEach(eq=>{
+    const t=countByState(list.filter(d=>d.equipa===eq));
+    ['rasc','val','exec','valSav','rev','impl','cancel'].forEach(k=>allCounts.push(t[k]));
+  });
+  const maxCount=Math.max(...allCounts,1);
+
+  let html='';
+  const eqFilter=$('mfEquipa').value;
+  const teams=eqFilter?[eqFilter]:EQUIPAS;
+  const totals={total:0,rasc:0,val:0,exec:0,valSav:0,rev:0,impl:0,cancel:0};
+
+  teams.forEach(eq=>{
+    const tList=list.filter(d=>d.equipa===eq);
+    const t=countByState(tList);
+    Object.keys(totals).forEach(k=>totals[k]+=t[k]);
+    const open=_drillOpen.has(eq);
+
+    html+=`<tr class="team-row${open?' expanded':''}">
+      <td onclick="toggleTeamDrill('${eq}')"><span class="team-toggle">${eq}</span></td>
+      ${metricCell(t.total,heatClass(t.total,maxCount),eq,'','total')}
+      ${metricCell(t.rasc,heatClass(t.rasc,maxCount),eq,'','rasc')}
+      ${metricCell(t.val,heatClass(t.val,maxCount),eq,'','val')}
+      ${metricCell(t.exec,heatClass(t.exec,maxCount),eq,'','exec')}
+      ${metricCell(t.valSav,heatClass(t.valSav,maxCount),eq,'','valSav')}
+      ${metricCell(t.rev,heatClass(t.rev,maxCount),eq,'','rev')}
+      ${metricCell(t.impl,heatClass(t.impl,maxCount),eq,'','impl')}
+      ${metricCell(t.cancel,heatClass(t.cancel,maxCount),eq,'','cancel')}
+    </tr>`;
+
+    // Show initiative drill-down for team level
+    if(_initDrill&&_initDrill.equipa===eq&&!_initDrill.colab){
+      html+=renderInitDrillRow(tList,_initDrill.stateKey);
+    }
+
+    if(open){
+      const colabs=[...new Set(tList.map(d=>d.colab))].sort();
+      colabs.forEach(name=>{
+        const cList=tList.filter(d=>d.colab===name);
+        const cl=countByState(cList);
+        html+=`<tr class="drill-row">
+          <td>${name}</td>
+          ${metricCell(cl.total,heatClass(cl.total,maxCount),eq,name,'total')}
+          ${metricCell(cl.rasc,heatClass(cl.rasc,maxCount),eq,name,'rasc')}
+          ${metricCell(cl.val,heatClass(cl.val,maxCount),eq,name,'val')}
+          ${metricCell(cl.exec,heatClass(cl.exec,maxCount),eq,name,'exec')}
+          ${metricCell(cl.valSav,heatClass(cl.valSav,maxCount),eq,name,'valSav')}
+          ${metricCell(cl.rev,heatClass(cl.rev,maxCount),eq,name,'rev')}
+          ${metricCell(cl.impl,heatClass(cl.impl,maxCount),eq,name,'impl')}
+          ${metricCell(cl.cancel,heatClass(cl.cancel,maxCount),eq,name,'cancel')}
+        </tr>`;
+
+        // Show initiative drill-down for collaborator level
+        if(_initDrill&&_initDrill.equipa===eq&&_initDrill.colab===name){
+          html+=renderInitDrillRow(cList,_initDrill.stateKey);
+        }
+      });
+    }
+  });
+
+  html+=`<tr class="totals-row">
+    <td>Total</td>
+    <td class="metric-val">${totals.total}</td>
+    <td class="metric-val">${totals.rasc||'—'}</td>
+    <td class="metric-val">${totals.val||'—'}</td>
+    <td class="metric-val">${totals.exec||'—'}</td>
+    <td class="metric-val">${totals.valSav||'—'}</td>
+    <td class="metric-val">${totals.rev||'—'}</td>
+    <td class="metric-val">${totals.impl||'—'}</td>
+    <td class="metric-val">${totals.cancel||'—'}</td>
+  </tr>`;
+
+  $('metricsTable').innerHTML=html;
+}
+
+function renderInitDrillRow(items,stateKey){
+  const stateFilter=STATE_KEYS[stateKey];
+  const filtered=stateFilter?items.filter(d=>d.estado===stateFilter):items;
+  if(!filtered.length)return'';
+  const label=STATE_LABELS[stateKey]||'';
+  let h=`<tr class="drill-inits"><td colspan="9"><div class="drill-inits-inner">`;
+  h+=`<div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.3px;margin-bottom:8px;">${filtered.length} iniciativa${filtered.length>1?'s':''} — ${label}</div>`;
+  filtered.forEach(d=>{
+    h+=`<div class="drill-init-item" onclick="openPanel('${d.code}','dashboard')">
+      <span class="drill-init-code">${d.code}</span>
+      <span class="drill-init-title">${d.title}</span>
+      <span class="chip ${chipCls(d.estado)}" style="font-size:10px;">${d.estado}</span>
+      <span class="drill-init-colab">${d.colab}</span>
+    </div>`;
+  });
+  h+=`</div></td></tr>`;
+  return h;
+}
+
+function drillInitiatives(equipa,colab,stateKey){
+  if(_initDrill&&_initDrill.equipa===equipa&&_initDrill.colab===(colab||'')&&_initDrill.stateKey===stateKey){
+    _initDrill=null;
+  }else{
+    _initDrill={equipa,colab:colab||'',stateKey};
+    // Auto-expand team if drilling into collaborator
+    if(colab&&!_drillOpen.has(equipa))_drillOpen.add(equipa);
+  }
+  renderDashboard();
+}
+
+function toggleTeamDrill(eq){
+  if(_drillOpen.has(eq)){_drillOpen.delete(eq);if(_initDrill&&_initDrill.equipa===eq&&_initDrill.colab)_initDrill=null;}
+  else _drillOpen.add(eq);
+  renderDashboard();
+}
+
+function clearDashboardF(){setDashScope('todas');$('mfPeriodo').value='';$('mfEstado').value='';_initDrill=null;renderDashboard();}
+['mfPeriodo','mfEquipa','mfEstado'].forEach(id=>{const el=$(id);el.addEventListener('change',()=>{_initDrill=null;renderDashboard();});});
+
+function exportDashboardCSV(){
+  const list=getFilteredDB();
+  const headers='Equipa;Total;Rascunho;Validação;Execução;Val. Savings;Revisão;Implementadas;Canceladas';
+  const rows=EQUIPAS.map(eq=>{
+    const t=countByState(list.filter(d=>d.equipa===eq));
+    return`${eq};${t.total};${t.rasc};${t.val};${t.exec};${t.valSav};${t.rev};${t.impl};${t.cancel}`;
+  });
+  const tot=countByState(list);
+  rows.push(`Total;${tot.total};${tot.rasc};${tot.val};${tot.exec};${tot.valSav};${tot.rev};${tot.impl};${tot.cancel}`);
+  downloadCSV(headers+'\n'+rows.join('\n')+'\n','place_dashboard.csv');
+}
+
+/* ── Init ── */
+renderInicio();
+renderInstrucoes();
+</script>
+</body>
+</html>

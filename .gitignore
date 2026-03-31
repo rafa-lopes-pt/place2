@@ -1,0 +1,22 @@
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+
+# Claude Code local settings
+.claude/settings.local.json
+
+# Non-app directories (keep local only)
+erds/
+flows/
+savings-data/

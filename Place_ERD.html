@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PLACE ERD -- PDCA Initiative Management</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+    background: #1a1a2e;
+    color: #c8c8d0;
+    min-height: 100vh;
+  }
+
+  h1 {
+    text-align: center;
+    padding: 24px 0 8px;
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #f0f0f0;
+  }
+
+  .subtitle {
+    text-align: center;
+    color: #888;
+    font-size: 0.85rem;
+    margin-bottom: 24px;
+    max-width: 1100px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.5;
+  }
+
+  /* ---- ERD Canvas ---- */
+  #canvas {
+    position: relative;
+    width: 1440px;
+    margin: 0 auto 40px;
+    min-height: 1220px;
+  }
+
+  svg#lines {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ---- Entity Cards ---- */
+  .entity {
+    position: absolute;
+    background: #16213e;
+    border: 1px solid #2a2d5e;
+    border-radius: 6px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+    min-width: 260px;
+    z-index: 1;
+    font-size: 0.8rem;
+  }
+
+  .entity-header {
+    background: #0f3460;
+    color: #f0f0f0;
+    padding: 10px 14px;
+    border-radius: 5px 5px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .entity-header .field-count {
+    background: rgba(255,255,255,0.15);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: 400;
+  }
+
+  .field-row {
+    display: flex;
+    align-items: center;
+    padding: 4px 14px;
+    border-bottom: 1px solid #1e2550;
+    gap: 8px;
+  }
+
+  .field-row:last-child { border-bottom: none; }
+
+  .field-name {
+    flex: 1;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 0.78rem;
+    color: #c8c8d0;
+  }
+
+  /* ---- Badges ---- */
+  .badge {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    flex-shrink: 0;
+  }
+
+  .badge-text { background: #1a3a5c; color: #6db3f2; }
+  .badge-note { background: #4a2800; color: #ffb74d; }
+  .badge-pk   { background: #5c1a1a; color: #ef9a9a; }
+  .badge-fk   { background: #3a1a5c; color: #ce93d8; }
+  .badge-idx  { background: #1a3a1a; color: #81c784; }
+  .badge-ui   { background: #1a3a3a; color: #80cbc4; font-style: italic; }
+
+  .field-row.pk-row { background: rgba(92,26,26,0.12); }
+  .field-row.fk-row { background: rgba(58,26,92,0.12); }
+
+  /* ---- Entity Positions ---- */
+  #org-hierarchy     { top: 60px;  left: 20px; }
+  #initiatives       { top: 60px;  left: 350px; min-width: 280px; }
+  #initiative-events { top: 60px;  left: 720px; }
+  #financials        { top: 60px;  left: 1070px; min-width: 280px; }
+
+  #notifications     { top: 910px; left: 20px;  min-width: 240px; }
+  #comments          { top: 910px; left: 330px; min-width: 240px; }
+  #docs              { top: 910px; left: 640px; min-width: 250px; }
+  #shared-access     { top: 910px; left: 980px; min-width: 270px; }
+
+  /* ---- Legend ---- */
+  .legend {
+    width: 1440px;
+    margin: 0 auto 40px;
+    background: #16213e;
+    border: 1px solid #2a2d5e;
+    border-radius: 6px;
+    padding: 20px 28px;
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+    font-size: 0.82rem;
+  }
+
+  .legend-section h3 {
+    font-size: 0.85rem;
+    margin-bottom: 8px;
+    color: #f0f0f0;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+    color: #aaa;
+  }
+
+  .legend-line {
+    width: 50px;
+    height: 3px;
+    flex-shrink: 0;
+  }
+
+  .legend-line.solid { background: #4fc3f7; }
+  .legend-line.solid-one { background: #81c784; }
+  .legend-line.dashed {
+    background: repeating-linear-gradient(90deg, #888 0, #888 6px, transparent 6px, transparent 10px);
+    height: 2px;
+  }
+
+  /* ---- Supplementary Sections ---- */
+  section {
+    width: 1440px;
+    margin: 0 auto 24px;
+    background: #16213e;
+    border: 1px solid #2a2d5e;
+    border-radius: 6px;
+    padding: 20px 28px;
+  }
+
+  section h2 {
+    color: #f0f0f0;
+    font-size: 1.15rem;
+    margin-bottom: 4px;
+  }
+
+  section p.desc {
+    color: #888;
+    font-size: 0.82rem;
+    margin-bottom: 14px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+
+  thead th {
+    background: #0f3460;
+    color: #f0f0f0;
+    padding: 8px 12px;
+    text-align: left;
+    font-weight: 600;
+  }
+
+  tbody td {
+    padding: 6px 12px;
+    border-bottom: 1px solid #1e2550;
+    color: #c8c8d0;
+  }
+
+  tbody tr:nth-child(odd) { background: rgba(15,52,96,0.15); }
+
+  code {
+    background: #0d1b2a;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 0.82em;
+    color: #6db3f2;
+  }
+
+  .legend-bottom {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    font-size: 0.8rem;
+    color: #888;
+  }
+</style>
+</head>
+<body>
+
+<h1>PLACE ERD -- PDCA Initiative Management</h1>
+<p class="subtitle">Eight SharePoint Lists / All fields stored as Text or Note (string-only storage) / UUID-based cross-references / Event-sourced lifecycle / Separate lists for financials and shared access</p>
+
+<!-- ============================================================ -->
+<!--  ERD CANVAS                                                   -->
+<!-- ============================================================ -->
+<div id="canvas">
+  <svg id="lines"></svg>
+
+  <!-- OrgHierarchy (15 fields) -->
+  <div class="entity" id="org-hierarchy">
+    <div class="entity-header">
+      <span>OrgHierarchy</span>
+      <span class="field-count">15 fields</span>
+    </div>
+    <div class="field-row pk-row">
+      <span class="field-name">Title</span>
+      <span class="badge badge-text">Text</span>
+      <span class="badge badge-pk">PK</span>
+      <span class="badge badge-idx">IDX</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">FullName</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">ShortName</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">DeptCode</span>
+      <span class="badge badge-text">Text</span>
+      <span class="badge badge-idx">IDX</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">DeptName</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">SubDivCode</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">SubDivName</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">Category</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">ManagerId</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">ManagerName</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">AncestorPath</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">DeptAncestorPath</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">Depth</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">Email</span>
+      <span class="badge badge-text">Text</span>
+      <span class="badge badge-idx">IDX</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">AppRole</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+  </div>
+
+  <!-- Initiatives (19 fields) -->
+  <div class="entity" id="initiatives">
+    <div class="entity-header">
+      <span>Initiatives</span>
+      <span class="field-count">18 fields</span>
+    </div>
+    <div class="field-row pk-row">
+      <span class="field-name">UUID</span>
+      <span class="badge badge-text">Text</span>
+      <span class="badge badge-pk">PK</span>
+      <span class="badge badge-idx">IDX</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">Title</span>
+      <span class="badge badge-text">Text</span>
+      <span class="badge badge-idx">IDX</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">Description</span>
+      <span class="badge badge-note">Note</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">Problem</span>
+      <span class="badge badge-note">Note</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">Objective</span>
+      <span class="badge badge-note">Note</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">Status</span>
+      <span class="badge badge-text">Text</span>
+      <span class="badge badge-idx">IDX</span>
+    </div>
+    <div class="field-row fk-row">
+      <span class="field-name">ImpactedTeamOUID</span>
+      <span class="badge badge-text">Text</span>
+      <span class="badge badge-fk">FK</span>
+      <span class="badge badge-idx">IDX</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">IsConfidential</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">SubmittedBy</span>
+      <span class="badge badge-note">Note</span>
+      <span class="badge badge-ui">UI</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">SubmittedByEmail</span>
+      <span class="badge badge-text">Text</span>
+      <span class="badge badge-idx">IDX</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">Mentor</span>
+      <span class="badge badge-note">Note</span>
+      <span class="badge badge-ui">UI</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">MentorEmail</span>
+      <span class="badge badge-text">Text</span>
+      <span class="badge badge-idx">IDX</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">GestorValidator</span>
+      <span class="badge badge-note">Note</span>
+      <span class="badge badge-ui">UI</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">GestorValidatorEmail</span>
+      <span class="badge badge-text">Text</span>
+      <span class="badge badge-idx">IDX</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">Tags</span>
+      <span class="badge badge-note">Note</span>
+    </div>
+  </div>
+
+  <!-- InitiativeEvents (9 fields) -->
+  <div class="entity" id="initiative-events">
+    <div class="entity-header">
+      <span>InitiativeEvents</span>
+      <span class="field-count">9 fields</span>
+    </div>
+    <div class="field-row pk-row">
+      <span class="field-name">UUID</span>
+      <span class="badge badge-text">Text</span>
+      <span class="badge badge-pk">PK</span>
+      <span class="badge badge-idx">IDX</span>
+    </div>
+    <div class="field-row fk-row">
+      <span class="field-name">InitiativeUUID</span>
+      <span class="badge badge-text">Text</span>
+      <span class="badge badge-fk">FK</span>
+      <span class="badge badge-idx">IDX</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">EventType</span>
+      <span class="badge badge-text">Text</span>
+      <span class="badge badge-idx">IDX</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">FromStatus</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">ToStatus</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">Comment</span>
+      <span class="badge badge-note">Note</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">Actor</span>
+      <span class="badge badge-note">Note</span>
+      <span class="badge badge-ui">UI</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">ActorEmail</span>
+      <span class="badge badge-text">Text</span>
+      <span class="badge badge-idx">IDX</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">Date</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+  </div>
+
+  <!-- InitiativesFinancials (28 fields) -->
+  <div class="entity" id="financials">
+    <div class="entity-header">
+      <span>InitiativesFinancials</span>
+      <span class="field-count">28 fields</span>
+    </div>
+    <div class="field-row pk-row">
+      <span class="field-name">UUID</span>
+      <span class="badge badge-text">Text</span>
+      <span class="badge badge-pk">PK</span>
+      <span class="badge badge-idx">IDX</span>
+    </div>
+    <div class="field-row fk-row">
+      <span class="field-name">InitiativeUUID</span>
+      <span class="badge badge-text">Text</span>
+      <span class="badge badge-fk">FK</span>
+      <span class="badge badge-idx">IDX</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">TimePeriod</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">VolumePropostasBefore</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">VolumePropostasAfter</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">MontanteMedioBefore</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">MontanteMedioAfter</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">TaxaTransformacaoBefore</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">TaxaTransformacaoAfter</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">VolumeBefore</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">VolumeAfter</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">CustoUnitarioBefore</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">CustoUnitarioAfter</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">VolumesProcessadosBefore</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">VolumesProcessadosAfter</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">TempoTratamentoBefore</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">TempoTratamentoAfter</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">ProducaoFinalBefore</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">ProducaoFinalAfter</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">FTEBefore</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">FTEAfter</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">SavingType</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">SavingCategory</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">EstimatedSavings</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">ValidatedSavings</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">LastModifiedBy</span>
+      <span class="badge badge-note">Note</span>
+      <span class="badge badge-ui">UI</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">LastModifiedByEmail</span>
+      <span class="badge badge-text">Text</span>
+      <span class="badge badge-idx">IDX</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">LastModifiedDate</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+  </div>
+
+  <!-- Notifications (5 fields) -->
+  <div class="entity" id="notifications">
+    <div class="entity-header">
+      <span>Notifications</span>
+      <span class="field-count">5 fields</span>
+    </div>
+    <div class="field-row pk-row">
+      <span class="field-name">UUID</span>
+      <span class="badge badge-text">Text</span>
+      <span class="badge badge-pk">PK</span>
+      <span class="badge badge-idx">IDX</span>
+    </div>
+    <div class="field-row fk-row">
+      <span class="field-name">InitiativeUUID</span>
+      <span class="badge badge-text">Text</span>
+      <span class="badge badge-fk">FK</span>
+      <span class="badge badge-idx">IDX</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">Recipient</span>
+      <span class="badge badge-text">Text</span>
+      <span class="badge badge-idx">IDX</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">Type</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">CreatedDate</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+  </div>
+
+  <!-- Comments (6 fields) -->
+  <div class="entity" id="comments">
+    <div class="entity-header">
+      <span>Comments</span>
+      <span class="field-count">6 fields</span>
+    </div>
+    <div class="field-row pk-row">
+      <span class="field-name">UUID</span>
+      <span class="badge badge-text">Text</span>
+      <span class="badge badge-pk">PK</span>
+      <span class="badge badge-idx">IDX</span>
+    </div>
+    <div class="field-row fk-row">
+      <span class="field-name">InitiativeUUID</span>
+      <span class="badge badge-text">Text</span>
+      <span class="badge badge-fk">FK</span>
+      <span class="badge badge-idx">IDX</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">Author</span>
+      <span class="badge badge-note">Note</span>
+      <span class="badge badge-ui">UI</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">Body</span>
+      <span class="badge badge-note">Note</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">IsConfidential</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">CommentDate</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+  </div>
+
+  <!-- InitiativesDocs (9 fields) -->
+  <div class="entity" id="docs">
+    <div class="entity-header">
+      <span>InitiativesDocs</span>
+      <span class="field-count">9 fields</span>
+    </div>
+    <div class="field-row pk-row">
+      <span class="field-name">UUID</span>
+      <span class="badge badge-text">Text</span>
+      <span class="badge badge-pk">PK</span>
+      <span class="badge badge-idx">IDX</span>
+    </div>
+    <div class="field-row fk-row">
+      <span class="field-name">InitiativeUUID</span>
+      <span class="badge badge-text">Text</span>
+      <span class="badge badge-fk">FK</span>
+      <span class="badge badge-idx">IDX</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">FileName</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">FileUrl</span>
+      <span class="badge badge-note">Note</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">FileType</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">UploadedBy</span>
+      <span class="badge badge-note">Note</span>
+      <span class="badge badge-ui">UI</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">UploadedByEmail</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">UploadedDate</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">Description</span>
+      <span class="badge badge-note">Note</span>
+    </div>
+  </div>
+
+  <!-- InitiativesSharedAccess (9 fields) -->
+  <div class="entity" id="shared-access">
+    <div class="entity-header">
+      <span>InitiativesSharedAccess</span>
+      <span class="field-count">9 fields</span>
+    </div>
+    <div class="field-row pk-row">
+      <span class="field-name">UUID</span>
+      <span class="badge badge-text">Text</span>
+      <span class="badge badge-pk">PK</span>
+      <span class="badge badge-idx">IDX</span>
+    </div>
+    <div class="field-row fk-row">
+      <span class="field-name">InitiativeUUID</span>
+      <span class="badge badge-text">Text</span>
+      <span class="badge badge-fk">FK</span>
+      <span class="badge badge-idx">IDX</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">SharedWith</span>
+      <span class="badge badge-note">Note</span>
+      <span class="badge badge-ui">UI</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">SharedWithEmail</span>
+      <span class="badge badge-text">Text</span>
+      <span class="badge badge-idx">IDX</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">SharedBy</span>
+      <span class="badge badge-note">Note</span>
+      <span class="badge badge-ui">UI</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">SharedByEmail</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">Type</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">Status</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+    <div class="field-row">
+      <span class="field-name">SharedDate</span>
+      <span class="badge badge-text">Text</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!--  LEGEND                                                       -->
+<!-- ============================================================ -->
+<div class="legend">
+  <div class="legend-section">
+    <h3>Relationship Lines</h3>
+    <div class="legend-item">
+      <div class="legend-line solid"></div>
+      <span>Foreign key (1:N -- UUID cross-reference)</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-line solid-one"></div>
+      <span>Foreign key (1:1 -- unique constraint)</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-line dashed"></div>
+      <span>Logical relationship (no stored FK)</span>
+    </div>
+  </div>
+  <div class="legend-section">
+    <h3>Field Badges</h3>
+    <div class="legend-item"><span class="badge badge-text">Text</span> Single-line field (max 255 chars)</div>
+    <div class="legend-item"><span class="badge badge-note">Note</span> Multi-line field (JSON, long text)</div>
+    <div class="legend-item"><span class="badge badge-pk">PK</span> Primary key (UUID or employee ID)</div>
+    <div class="legend-item"><span class="badge badge-fk">FK</span> Foreign key (stores UUID/code of parent)</div>
+    <div class="legend-item"><span class="badge badge-idx">IDX</span> Indexed column (CAML query filter)</div>
+    <div class="legend-item"><span class="badge badge-ui">UI</span> UserIdentity JSON</div>
+  </div>
+  <div class="legend-section">
+    <h3>People Fields</h3>
+    <div class="legend-item">UI stores JSON: {email, displayName}</div>
+    <div class="legend-item">Companion *Email fields enable indexed CAML queries</div>
+  </div>
+  <div class="legend-section">
+    <h3>Data Conventions</h3>
+    <div class="legend-item">All values stored as strings (SharePoint limitation)</div>
+    <div class="legend-item">Dates: ISO format (YYYY-MM-DD)</div>
+    <div class="legend-item">UUID format: PDCA_XXXX_ddmmyyyy</div>
+    <div class="legend-item">OrgHierarchy PK is employee ID (Title field)</div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!--  STATUS WORKFLOW                                              -->
+<!-- ============================================================ -->
+<section>
+  <h2>Status Workflow</h2>
+  <p class="desc">PDCA initiative lifecycle from draft to implementation, rejection, or cancellation. All transitions are recorded as InitiativeEvents.</p>
+  <table>
+    <thead>
+      <tr><th>From State</th><th>Action</th><th>To State</th><th>Actor</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>--</td><td>Create (save draft)</td><td><code>Rascunho</code></td><td>Owner</td></tr>
+      <tr><td>--</td><td>Create and submit</td><td><code>Submetido</code></td><td>Owner</td></tr>
+      <tr><td><code>Rascunho</code></td><td>Submit</td><td><code>Submetido</code></td><td>Owner</td></tr>
+      <tr><td><code>Submetido</code></td><td>Approve</td><td><code>Validado Mentor</code></td><td>Mentor</td></tr>
+      <tr><td><code>Submetido</code></td><td>Reject</td><td><code>Rejeitado</code></td><td>Mentor</td></tr>
+      <tr><td><code>Submetido</code></td><td>Request review</td><td><code>Em Revisao</code></td><td>Mentor</td></tr>
+      <tr><td><code>Validado Mentor</code></td><td>Start execution</td><td><code>Em Execucao</code></td><td>Owner</td></tr>
+      <tr><td><code>Em Execucao</code></td><td>Request savings validation</td><td><code>Por Validar</code></td><td>Owner</td></tr>
+      <tr><td><code>Por Validar</code></td><td>Approve savings</td><td><code>Validado Gestor</code></td><td>Gestor</td></tr>
+      <tr><td><code>Por Validar</code></td><td>Reject</td><td><code>Rejeitado</code></td><td>Gestor</td></tr>
+      <tr><td><code>Por Validar</code></td><td>Request review</td><td><code>Em Revisao</code></td><td>Gestor</td></tr>
+      <tr><td><code>Validado Gestor</code></td><td>Route to Mentor</td><td><code>Validacao Final</code></td><td>System</td></tr>
+      <tr><td><code>Validacao Final</code></td><td>Approve final savings</td><td><code>Implementado</code></td><td>Mentor</td></tr>
+      <tr><td><code>Validacao Final</code></td><td>Reject</td><td><code>Rejeitado</code></td><td>Mentor</td></tr>
+      <tr><td><code>Validacao Final</code></td><td>Request review</td><td><code>Em Revisao</code></td><td>Mentor</td></tr>
+      <tr><td><code>Rejeitado</code></td><td>Request review</td><td><code>Em Revisao</code></td><td>Owner</td></tr>
+      <tr><td><code>Em Revisao</code></td><td>Resubmit</td><td><code>Submetido</code></td><td>Owner</td></tr>
+      <tr><td>(any non-terminal)</td><td>Cancel</td><td><code>Cancelado</code></td><td>Owner</td></tr>
+    </tbody>
+  </table>
+  <p class="desc"><strong>Note:</strong> Rascunho is optional -- initiatives can be submitted directly without saving as draft.</p>
+</section>
+
+<!-- ============================================================ -->
+<!--  EVENT TYPES                                                  -->
+<!-- ============================================================ -->
+<section>
+  <h2>InitiativeEvents -- Event Types</h2>
+  <p class="desc">Every status transition, approval, rejection, and lifecycle action creates an immutable event record. Power BI joins on InitiativeUUID for cycle time and flow analysis.</p>
+  <table>
+    <thead>
+      <tr><th>EventType</th><th>FromStatus</th><th>ToStatus</th><th>Comment usage</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>Creation</code></td><td>--</td><td>Rascunho</td><td>--</td></tr>
+      <tr><td><code>Submission</code></td><td>Rascunho / --</td><td>Submetido</td><td>--</td></tr>
+      <tr><td><code>MentorApproval</code></td><td>Submetido</td><td>Validado Mentor</td><td>Mentor's approval note</td></tr>
+      <tr><td><code>MentorRejection</code></td><td>Submetido</td><td>Rejeitado</td><td>Rejection reason</td></tr>
+      <tr><td><code>ExecutionStart</code></td><td>Validado Mentor</td><td>Em Execucao</td><td>--</td></tr>
+      <tr><td><code>SavingsSubmission</code></td><td>Em Execucao</td><td>Por Validar</td><td>--</td></tr>
+      <tr><td><code>BusinessValidation</code></td><td>Por Validar</td><td>Validado Gestor</td><td>Gestor's validation note</td></tr>
+      <tr><td><code>BusinessRejection</code></td><td>Por Validar</td><td>Rejeitado</td><td>Rejection reason</td></tr>
+      <tr><td><code>FinalValidationRouting</code></td><td>Validado Gestor</td><td>Validacao Final</td><td>--</td></tr>
+      <tr><td><code>MentorFinalValidation</code></td><td>Validacao Final</td><td>Implementado</td><td>Mentor's final validation note</td></tr>
+      <tr><td><code>MentorFinalRejection</code></td><td>Validacao Final</td><td>Rejeitado</td><td>Rejection reason</td></tr>
+      <tr><td><code>ReviewRequest</code></td><td>Submetido / Por Validar / Validacao Final</td><td>Em Revisao</td><td>Review reason (actor: Mentor/Gestor)</td></tr>
+      <tr><td><code>ReviewRequest</code></td><td>Rejeitado</td><td>Em Revisao</td><td>Owner's review justification</td></tr>
+      <tr><td><code>Resubmission</code></td><td>Em Revisao</td><td>Submetido</td><td>--</td></tr>
+      <tr><td><code>Cancellation</code></td><td>any non-terminal</td><td>Cancelado</td><td>Cancellation reason</td></tr>
+      <tr><td><code>Transfer</code></td><td>--</td><td>--</td><td>Transfer note</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============================================================ -->
+<!--  SAVINGS ROUTING                                              -->
+<!-- ============================================================ -->
+<section>
+  <h2>Savings Routing Rules</h2>
+  <p class="desc">How initiatives are routed to the correct Gestor for savings validation based on type and value. Savings data lives in InitiativesFinancials.</p>
+  <table>
+    <thead>
+      <tr><th>Saving Type</th><th>Value Condition</th><th>Routes To</th><th>Validator Source</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>Sem saving</code></td><td>--</td><td>No savings validation needed</td><td>--</td></tr>
+      <tr><td><code>Soft Saving</code></td><td>&lt; 10,000 EUR</td><td>Gestor RD (Department Head)</td><td>GESTOR_MAP by Team</td></tr>
+      <tr><td><code>Soft Saving</code></td><td>&gt;= 10,000 EUR</td><td>Gestor RF (Financial)</td><td>Financial validator</td></tr>
+      <tr><td><code>Hard Saving</code></td><td>Any value</td><td>Gestor RF (Financial)</td><td>Financial validator</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============================================================ -->
+<!--  RELATIONSHIP SUMMARY                                         -->
+<!-- ============================================================ -->
+<section>
+  <h2>Relationship Summary</h2>
+  <p class="desc">All relationships are logical -- SharePoint has no referential integrity constraints. UUIDs and email addresses serve as join keys. Power BI joins on UUID = InitiativeUUID.</p>
+  <table>
+    <thead>
+      <tr><th>Parent</th><th>Child</th><th>Link Field</th><th>Cardinality</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>OrgHierarchy</td><td>Initiatives</td><td><code>DeptCode = ImpactedTeamOUID</code></td><td>1:N</td></tr>
+      <tr><td>Initiatives</td><td>InitiativeEvents</td><td><code>InitiativeUUID</code></td><td>1:N</td></tr>
+      <tr><td>Initiatives</td><td>InitiativesFinancials</td><td><code>InitiativeUUID</code></td><td>1:1</td></tr>
+      <tr><td>Initiatives</td><td>InitiativesSharedAccess</td><td><code>InitiativeUUID</code></td><td>1:N</td></tr>
+      <tr><td>Initiatives</td><td>InitiativesDocs</td><td><code>InitiativeUUID</code></td><td>1:N</td></tr>
+      <tr><td>Initiatives</td><td>Comments</td><td><code>InitiativeUUID</code></td><td>1:N</td></tr>
+      <tr><td>Initiatives</td><td>Notifications</td><td><code>InitiativeUUID</code></td><td>1:N</td></tr>
+    </tbody>
+  </table>
+  <div class="legend-bottom">
+    <span><strong>PK</strong> = Primary Key (UUID or employee ID)</span>
+    <span><strong>FK</strong> = Foreign Key (logical, not enforced)</span>
+    <span><strong>1:1</strong> = One financials record per initiative</span>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!--  FIELD VALUE TYPES                                            -->
+<!-- ============================================================ -->
+<section>
+  <h2>Field Value Types</h2>
+  <p class="desc">Fields that store a fixed set of string values (enums). All values are stored as plain strings in SharePoint Text fields. Sources reference code constants or implicit usage patterns.</p>
+  <table>
+    <thead>
+      <tr><th>List</th><th>Field</th><th>Allowed Values</th><th>Source</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Initiatives</td>
+        <td><code>Status</code></td>
+        <td><code>Rascunho</code>, <code>Submetido</code>, <code>Validado Mentor</code>, <code>Em Execucao</code>, <code>Por Validar</code>, <code>Validado Gestor</code>, <code>Validacao Final</code>, <code>Implementado</code>, <code>Em Revisao</code>, <code>Rejeitado</code>, <code>Cancelado</code></td>
+        <td><code>STATUS</code> in status-helpers.js</td>
+      </tr>
+      <tr>
+        <td>Initiatives</td>
+        <td><code>IsConfidential</code></td>
+        <td><code>true</code>, <code>false</code></td>
+        <td>Implicit (string booleans)</td>
+      </tr>
+      <tr>
+        <td>InitiativeEvents</td>
+        <td><code>EventType</code></td>
+        <td><code>Creation</code>, <code>Submission</code>, <code>MentorApproval</code>, <code>MentorRejection</code>, <code>ExecutionStart</code>, <code>SavingsSubmission</code>, <code>BusinessValidation</code>, <code>BusinessRejection</code>, <code>FinalValidationRouting</code>, <code>MentorFinalValidation</code>, <code>MentorFinalRejection</code>, <code>ReviewRequest</code>, <code>Resubmission</code>, <code>Cancellation</code>, <code>Transfer</code>, <code>Comment</code></td>
+        <td><code>EVENT_TYPES</code> in constants.js</td>
+      </tr>
+      <tr>
+        <td>InitiativesFinancials</td>
+        <td><code>TimePeriod</code></td>
+        <td><code>Diario</code>, <code>Mensal</code>, <code>Trimestral</code>, <code>Semestral</code>, <code>Anual</code></td>
+        <td><code>ANNUALIZATION_FACTORS</code> in constants.js</td>
+      </tr>
+      <tr>
+        <td>InitiativesFinancials</td>
+        <td><code>SavingType</code></td>
+        <td><code>Sem saving</code>, <code>Hard Saving</code>, <code>Soft Saving</code></td>
+        <td><code>deriveSavingType()</code> in constants.js</td>
+      </tr>
+      <tr>
+        <td>InitiativesFinancials</td>
+        <td><code>SavingCategory</code></td>
+        <td><code>Reducao de custos</code>, <code>Aumento de receita</code>, <code>Reducao de risco</code>, <code>Custos e riscos evitados</code>, <code>Melhoria de qualidade</code></td>
+        <td><code>SAVING_CATEGORIES</code> in constants.js</td>
+      </tr>
+      <tr>
+        <td>Notifications</td>
+        <td><code>Type</code></td>
+        <td><code>state_change</code>, <code>comment</code>, <code>collaboration</code></td>
+        <td>Implicit (workflow-actions.js, side-panel-detail.js)</td>
+      </tr>
+      <tr>
+        <td>Comments</td>
+        <td><code>IsConfidential</code></td>
+        <td><code>true</code>, <code>false</code></td>
+        <td>Implicit (string booleans)</td>
+      </tr>
+      <tr>
+        <td>InitiativesSharedAccess</td>
+        <td><code>Type</code></td>
+        <td><code>read</code>, <code>collaborate</code></td>
+        <td>Implicit (shared-api.js)</td>
+      </tr>
+      <tr>
+        <td>InitiativesSharedAccess</td>
+        <td><code>Status</code></td>
+        <td><code>active</code>, <code>revoked</code></td>
+        <td>Implicit (shared-api.js)</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============================================================ -->
+<!--  SVG RELATIONSHIP DRAWING                                     -->
+<!-- ============================================================ -->
+<script>
+(function () {
+  var svg = document.getElementById('lines');
+  var canvas = document.getElementById('canvas');
+
+  function resizeSvg() {
+    var rect = canvas.getBoundingClientRect();
+    svg.setAttribute('width', rect.width);
+    svg.setAttribute('height', rect.height);
+    svg.setAttribute('viewBox', '0 0 ' + rect.width + ' ' + rect.height);
+  }
+
+  function getFieldCenter(entityId, fieldIndex, side) {
+    var entity = document.getElementById(entityId);
+    var rows = entity.querySelectorAll('.field-row');
+    var row = rows[fieldIndex];
+    if (!row) return { x: 0, y: 0 };
+
+    var cRect = canvas.getBoundingClientRect();
+    var rRect = row.getBoundingClientRect();
+    var eRect = entity.getBoundingClientRect();
+
+    var y = rRect.top - cRect.top + rRect.height / 2;
+    var x = side === 'left'
+      ? eRect.left - cRect.left
+      : eRect.right - cRect.left;
+    return { x: x, y: y };
+  }
+
+  function getEntityEdge(entityId, edge) {
+    var el = document.getElementById(entityId);
+    var cRect = canvas.getBoundingClientRect();
+    var eRect = el.getBoundingClientRect();
+    switch (edge) {
+      case 'bottom':
+        return { x: eRect.left - cRect.left + eRect.width / 2, y: eRect.bottom - cRect.top };
+      case 'top':
+        return { x: eRect.left - cRect.left + eRect.width / 2, y: eRect.top - cRect.top };
+      default:
+        return { x: 0, y: 0 };
+    }
+  }
+
+  function getEntityEdgeAt(entityId, edge, xFraction) {
+    var el = document.getElementById(entityId);
+    var cRect = canvas.getBoundingClientRect();
+    var eRect = el.getBoundingClientRect();
+    var x = eRect.left - cRect.left + eRect.width * xFraction;
+    var y = edge === 'bottom' ? eRect.bottom - cRect.top : eRect.top - cRect.top;
+    return { x: x, y: y };
+  }
+
+  function createPath(d, style, color, label, labelPos) {
+    var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', d);
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', color);
+    path.setAttribute('stroke-width', '2');
+    if (style === 'dashed') {
+      path.setAttribute('stroke-dasharray', '8,4');
+    }
+    svg.appendChild(path);
+
+    if (label && labelPos) {
+      var text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      text.setAttribute('x', labelPos.x);
+      text.setAttribute('y', labelPos.y);
+      text.setAttribute('text-anchor', 'middle');
+      text.setAttribute('font-size', '11');
+      text.setAttribute('font-family', 'Segoe UI, Arial, sans-serif');
+      text.setAttribute('fill', '#888');
+      text.textContent = label;
+      svg.appendChild(text);
+
+      var bbox = text.getBBox();
+      var bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      bg.setAttribute('x', bbox.x - 4);
+      bg.setAttribute('y', bbox.y - 1);
+      bg.setAttribute('width', bbox.width + 8);
+      bg.setAttribute('height', bbox.height + 2);
+      bg.setAttribute('fill', '#1a1a2e');
+      bg.setAttribute('rx', '3');
+      svg.insertBefore(bg, text);
+    }
+  }
+
+  function drawCrowFoot(x, y, direction, color) {
+    var size = 10;
+    var spread = 7;
+    var dx = direction === 'left' ? -size : size;
+    var c = color || '#4fc3f7';
+    var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    [y - spread, y, y + spread].forEach(function (ty) {
+      var l = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      l.setAttribute('x1', x); l.setAttribute('y1', y);
+      l.setAttribute('x2', x + dx); l.setAttribute('y2', ty);
+      l.setAttribute('stroke', c); l.setAttribute('stroke-width', '2');
+      g.appendChild(l);
+    });
+    svg.appendChild(g);
+  }
+
+  function drawCrowFootVertical(x, y, direction, color) {
+    var size = 10;
+    var spread = 7;
+    var dy = direction === 'up' ? -size : size;
+    var c = color || '#4fc3f7';
+    var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    [x - spread, x, x + spread].forEach(function (tx) {
+      var l = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      l.setAttribute('x1', x); l.setAttribute('y1', y);
+      l.setAttribute('x2', tx); l.setAttribute('y2', y + dy);
+      l.setAttribute('stroke', c); l.setAttribute('stroke-width', '2');
+      g.appendChild(l);
+    });
+    svg.appendChild(g);
+  }
+
+  function drawOneMark(x, y, direction, color) {
+    var offset = direction === 'left' ? -8 : direction === 'right' ? 8 : 0;
+    var c = color || '#4fc3f7';
+    if (direction === 'up' || direction === 'down') {
+      var dy = direction === 'up' ? -8 : 8;
+      var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', x - 7); line.setAttribute('y1', y + dy);
+      line.setAttribute('x2', x + 7); line.setAttribute('y2', y + dy);
+      line.setAttribute('stroke', c); line.setAttribute('stroke-width', '2');
+      svg.appendChild(line);
+    } else {
+      var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', x + offset); line.setAttribute('y1', y - 7);
+      line.setAttribute('x2', x + offset); line.setAttribute('y2', y + 7);
+      line.setAttribute('stroke', c); line.setAttribute('stroke-width', '2');
+      svg.appendChild(line);
+    }
+  }
+
+  function drawRelationships() {
+    svg.innerHTML = '';
+    resizeSvg();
+
+    var fkColor = '#4fc3f7';
+    var oneOneColor = '#81c784';
+    var logicalColor = '#888';
+
+    // 1. OrgHierarchy.DeptCode --> Initiatives.ImpactedTeamOUID (logical, 1:N)
+    var from1 = getFieldCenter('org-hierarchy', 3, 'right');
+    var to1 = getFieldCenter('initiatives', 7, 'left');
+    var mid1x = (from1.x + to1.x) / 2;
+    var d1 = 'M' + from1.x + ',' + from1.y +
+             ' C' + mid1x + ',' + from1.y + ' ' + mid1x + ',' + to1.y + ' ' + to1.x + ',' + to1.y;
+    createPath(d1, 'dashed', logicalColor, '1:N logical', { x: mid1x, y: (from1.y + to1.y) / 2 - 12 });
+    drawOneMark(from1.x, from1.y, 'left', logicalColor);
+    drawCrowFoot(to1.x, to1.y, 'right', logicalColor);
+
+    // 2. Initiatives.UUID --> InitiativeEvents.InitiativeUUID (1:N)
+    var from2 = getFieldCenter('initiatives', 0, 'right');
+    var to2 = getFieldCenter('initiative-events', 1, 'left');
+    var mid2x = (from2.x + to2.x) / 2;
+    var d2 = 'M' + from2.x + ',' + from2.y +
+             ' C' + mid2x + ',' + from2.y + ' ' + mid2x + ',' + to2.y + ' ' + to2.x + ',' + to2.y;
+    createPath(d2, 'solid', fkColor, '1:N', { x: mid2x, y: Math.min(from2.y, to2.y) - 12 });
+    drawOneMark(from2.x, from2.y, 'left', fkColor);
+    drawCrowFoot(to2.x, to2.y, 'right', fkColor);
+
+    // 3. Initiatives.UUID --> InitiativesFinancials.InitiativeUUID (1:1, arcs above Events)
+    var from3 = getFieldCenter('initiatives', 0, 'right');
+    var to3 = getFieldCenter('financials', 1, 'left');
+    var arcY = 30;
+    var d3 = 'M' + from3.x + ',' + from3.y +
+             ' C' + from3.x + ',' + arcY + ' ' + to3.x + ',' + arcY + ' ' + to3.x + ',' + to3.y;
+    createPath(d3, 'solid', oneOneColor, '1:1', { x: (from3.x + to3.x) / 2, y: arcY + 14 });
+    drawOneMark(from3.x, from3.y, 'left', oneOneColor);
+    drawOneMark(to3.x, to3.y, 'right', oneOneColor);
+
+    // 4-7: Initiatives (bottom) --> bottom row entities (1:N each)
+    var bottomChildren = [
+      { id: 'notifications',  fraction: 0.15, label: '1:N' },
+      { id: 'comments',       fraction: 0.38, label: '1:N' },
+      { id: 'docs',           fraction: 0.62, label: '1:N' },
+      { id: 'shared-access',  fraction: 0.85, label: '1:N' }
+    ];
+
+    bottomChildren.forEach(function (child) {
+      var from = getEntityEdgeAt('initiatives', 'bottom', child.fraction);
+      var to = getEntityEdge(child.id, 'top');
+      var midY = (from.y + to.y) / 2;
+      var d = 'M' + from.x + ',' + from.y +
+              ' C' + from.x + ',' + midY + ' ' + to.x + ',' + midY + ' ' + to.x + ',' + to.y;
+      createPath(d, 'solid', fkColor, child.label, { x: (from.x + to.x) / 2, y: midY - 10 });
+      drawOneMark(from.x, from.y, 'down', fkColor);
+      drawCrowFootVertical(to.x, to.y, 'down', fkColor);
+    });
+  }
+
+  window.addEventListener('load', function () {
+    setTimeout(drawRelationships, 100);
+  });
+  window.addEventListener('resize', drawRelationships);
+})();
+</script>
+
+</body>
+</html>

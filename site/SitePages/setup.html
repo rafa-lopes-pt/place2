@@ -1,0 +1,820 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Site Setup</title>
+
+    <script src="../jquery.js"></script>
+    <script src="../sharepointContext.js"></script>
+    <script src="../spInterceptor.js"></script>
+
+    <style>
+      :root {
+        --bg: #f4f5f7;
+        --card-bg: #fff;
+        --border: #e0e0e0;
+        --text: #1a1a1a;
+        --text-muted: #666;
+        --green: #00915a;
+        --green-hover: #007a4d;
+        --green-bg: #e6f5ef;
+        --amber: #b45309;
+        --amber-bg: #fef3c7;
+        --blue: #1d4ed8;
+        --blue-bg: #dbeafe;
+        --orange: #c2410c;
+        --orange-bg: #ffedd5;
+        --red: #dc2626;
+        --red-hover: #b91c1c;
+        --red-bg: #fef2f2;
+        --gray: #6b7280;
+        --gray-hover: #4b5563;
+        --radius: 6px;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.5;
+      }
+
+      .container {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+      }
+
+      /* Header */
+      .header { margin-bottom: 1.5rem; }
+      .header h1 { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.25rem; }
+      .header p { color: var(--text-muted); font-size: 0.9rem; }
+
+      /* Action bar */
+      .action-bar {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+      }
+      .action-bar .separator { width: 1px; height: 2rem; background: var(--border); margin: 0 0.25rem; }
+      .scan-time { font-size: 0.8rem; color: var(--text-muted); margin-left: auto; }
+
+      /* Buttons */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.45rem 0.9rem;
+        font-size: 0.85rem;
+        font-weight: 500;
+        border: none;
+        border-radius: var(--radius);
+        cursor: pointer;
+        white-space: nowrap;
+        transition: background 0.15s;
+      }
+      .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+      .btn-primary { background: var(--green); color: #fff; }
+      .btn-primary:not(:disabled):hover { background: var(--green-hover); }
+      .btn-danger { background: var(--red); color: #fff; }
+      .btn-danger:not(:disabled):hover { background: var(--red-hover); }
+      .btn-secondary { background: #e5e7eb; color: var(--text); }
+      .btn-secondary:not(:disabled):hover { background: #d1d5db; }
+      .btn-sm { padding: 0.25rem 0.5rem; font-size: 0.78rem; }
+
+      /* Cards */
+      .list-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        margin-bottom: 1rem;
+        overflow: hidden;
+      }
+      .card-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        cursor: pointer;
+        user-select: none;
+        border-bottom: 1px solid transparent;
+      }
+      .card-header:hover { background: #fafafa; }
+      .list-card.open .card-header { border-bottom-color: var(--border); }
+      .card-header .toggle { font-size: 0.7rem; color: var(--text-muted); transition: transform 0.15s; }
+      .list-card.open .card-header .toggle { transform: rotate(90deg); }
+      .card-header .list-name { font-weight: 600; font-size: 0.95rem; }
+      .card-header .summary { font-size: 0.8rem; color: var(--text-muted); }
+      .card-header .card-actions { margin-left: auto; display: flex; gap: 0.35rem; }
+
+      .card-body { display: none; padding: 0; }
+      .list-card.open .card-body { display: block; }
+
+      /* Status badge */
+      .badge {
+        display: inline-block;
+        padding: 0.1rem 0.45rem;
+        font-size: 0.72rem;
+        font-weight: 600;
+        border-radius: 3px;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+      }
+      .badge-ok { background: var(--green-bg); color: var(--green); }
+      .badge-missing { background: var(--amber-bg); color: var(--amber); }
+      .badge-extra { background: var(--blue-bg); color: var(--blue); }
+      .badge-index { background: var(--orange-bg); color: var(--orange); }
+      .badge-list-missing { background: var(--red-bg); color: var(--red); }
+
+      /* Field table */
+      .field-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+      .field-table th {
+        text-align: left;
+        padding: 0.5rem 1rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--text-muted);
+        background: #f9fafb;
+        border-bottom: 1px solid var(--border);
+      }
+      .field-table td {
+        padding: 0.45rem 1rem;
+        border-bottom: 1px solid #f0f0f0;
+        vertical-align: middle;
+      }
+      .field-table tr:last-child td { border-bottom: none; }
+      .field-table .field-name { font-weight: 500; }
+      .field-table .field-type { color: var(--text-muted); }
+      .field-table .field-actions { text-align: right; }
+
+      /* Log panel */
+      .log-panel { margin-top: 1rem; }
+      .log-toggle {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 0;
+        cursor: pointer;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        user-select: none;
+        border: none;
+        background: none;
+      }
+      .log-toggle .toggle { font-size: 0.7rem; transition: transform 0.15s; }
+      .log-panel.open .log-toggle .toggle { transform: rotate(90deg); }
+      .log-content {
+        display: none;
+        background: #1e1e1e;
+        color: #d4d4d4;
+        padding: 1rem;
+        border-radius: var(--radius);
+        font-family: 'Cascadia Code', 'Fira Code', monospace;
+        font-size: 0.8rem;
+        line-height: 1.6;
+        max-height: 400px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+      .log-panel.open .log-content { display: block; }
+      .log-content .log-error { color: #f87171; }
+      .log-content .log-success { color: #4ade80; }
+      .log-content .log-info { color: #60a5fa; }
+
+      /* Empty state */
+      .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Site Setup</h1>
+        <p>Scan, create, and sync lists and fields defined in the schema below.</p>
+      </div>
+
+      <div class="action-bar">
+        <button id="btn-scan" class="btn btn-primary">Scan Site</button>
+        <div class="separator"></div>
+        <button id="btn-full-setup" class="btn btn-secondary" disabled>Full Setup</button>
+        <button id="btn-sync-all" class="btn btn-secondary" disabled>Sync All</button>
+        <span id="scan-time" class="scan-time"></span>
+      </div>
+
+      <div id="list-cards">
+        <div class="empty-state">Click "Scan Site" to inspect current list and field state.</div>
+      </div>
+
+      <div id="log-panel" class="log-panel">
+        <button class="log-toggle" id="log-toggle">
+          <span class="toggle">&#9654;</span> Activity Log
+        </button>
+        <pre class="log-content" id="log"></pre>
+      </div>
+    </div>
+
+    <script type="module">
+      import { SiteApi, spPOST } from '../SiteAssets/app/libs/nofbiz/nofbiz.base.js'
+
+      // -- Schema ---------------------------------------------------------
+      const SCHEMA = {
+        OrgHierarchy: [
+          { title: 'FullName' },
+          { title: 'ShortName' },
+          { title: 'DeptCode', indexed: true },
+          { title: 'DeptName' },
+          { title: 'SubDivCode' },
+          { title: 'SubDivName' },
+          { title: 'Category' },
+          { title: 'ManagerId' },
+          { title: 'ManagerName' },
+          { title: 'AncestorPath' },
+          { title: 'DeptAncestorPath' },
+          { title: 'Depth' },
+          { title: 'Email', indexed: true },
+          { title: 'AppRole' },
+        ],
+        Initiatives: [
+          { title: 'UUID', indexed: true },
+          { title: 'Description', multiline: true },
+          { title: 'Problem', multiline: true },
+          { title: 'Objective', multiline: true },
+          { title: 'Status', indexed: true },
+          { title: 'ImpactedTeamOUID', indexed: true },
+          { title: 'IsConfidential' },
+          { title: 'SubmittedBy', multiline: true },
+          { title: 'SubmittedByEmail', indexed: true },
+          { title: 'Mentor', multiline: true },
+          { title: 'MentorEmail', indexed: true },
+          { title: 'GestorValidator', multiline: true },
+          { title: 'GestorValidatorEmail', indexed: true },
+          { title: 'Tags', multiline: true },
+        ],
+        InitiativeEvents: [
+          { title: 'UUID', indexed: true },
+          { title: 'InitiativeUUID', indexed: true },
+          { title: 'EventType', indexed: true },
+          { title: 'FromStatus' },
+          { title: 'ToStatus' },
+          { title: 'Comment', multiline: true },
+          { title: 'Actor', multiline: true },
+          { title: 'ActorEmail', indexed: true },
+          { title: 'Date' },
+        ],
+        InitiativesFinancials: [
+          { title: 'UUID', indexed: true },
+          { title: 'InitiativeUUID', indexed: true },
+          { title: 'TimePeriod' },
+          { title: 'VolumePropostasBefore' },
+          { title: 'VolumePropostasAfter' },
+          { title: 'MontanteMedioBefore' },
+          { title: 'MontanteMedioAfter' },
+          { title: 'TaxaTransformacaoBefore' },
+          { title: 'TaxaTransformacaoAfter' },
+          { title: 'VolumeBefore' },
+          { title: 'VolumeAfter' },
+          { title: 'CustoUnitarioBefore' },
+          { title: 'CustoUnitarioAfter' },
+          { title: 'VolumesProcessadosBefore' },
+          { title: 'VolumesProcessadosAfter' },
+          { title: 'TempoTratamentoBefore' },
+          { title: 'TempoTratamentoAfter' },
+          { title: 'ProducaoFinalBefore' },
+          { title: 'ProducaoFinalAfter' },
+          { title: 'FTEBefore' },
+          { title: 'FTEAfter' },
+          { title: 'SavingType' },
+          { title: 'SavingCategory' },
+          { title: 'EstimatedSavings' },
+          { title: 'ValidatedSavings' },
+          { title: 'LastModifiedBy', multiline: true },
+          { title: 'LastModifiedByEmail', indexed: true },
+          { title: 'LastModifiedDate' },
+        ],
+        Notifications: [
+          { title: 'UUID', indexed: true },
+          { title: 'InitiativeUUID', indexed: true },
+          { title: 'Recipient', indexed: true },
+          { title: 'Type' },
+          { title: 'CreatedDate' },
+        ],
+        Comments: [
+          { title: 'UUID', indexed: true },
+          { title: 'InitiativeUUID', indexed: true },
+          { title: 'Author', multiline: true },
+          { title: 'Body', multiline: true },
+          { title: 'IsConfidential' },
+          { title: 'CommentDate' },
+        ],
+        InitiativesDocs: [
+          { title: 'UUID', indexed: true },
+          { title: 'InitiativeUUID', indexed: true },
+          { title: 'FileName' },
+          { title: 'FileUrl', multiline: true },
+          { title: 'FileType' },
+          { title: 'UploadedBy', multiline: true },
+          { title: 'UploadedByEmail' },
+          { title: 'UploadedDate' },
+          { title: 'Description', multiline: true },
+        ],
+        InitiativesSharedAccess: [
+          { title: 'UUID', indexed: true },
+          { title: 'InitiativeUUID', indexed: true },
+          { title: 'SharedWith', multiline: true },
+          { title: 'SharedWithEmail', indexed: true },
+          { title: 'SharedBy', multiline: true },
+          { title: 'SharedByEmail' },
+          { title: 'Type' },
+          { title: 'Status' },
+          { title: 'SharedDate' },
+        ],
+      };
+
+      // Built-in SP fields to ignore when computing EXTRA
+      const BUILTIN_FIELDS = new Set([
+        'ContentType', 'Title', 'Attachments', 'Modified', 'Created',
+        'Author', 'Editor', 'ContentTypeId', 'ComplianceAssetId',
+        'OData__UIVersionString', 'AppAuthor', 'AppEditor',
+      ]);
+
+      // -- View column helper -----------------------------------------------
+      async function addFieldToView(listName, fieldName) {
+        const url = `${_spPageContextInfo.webAbsoluteUrl}/_api/web/lists/getbytitle('${listName}')/DefaultView/ViewFields/addviewfield('${fieldName}')`;
+        try {
+          await spPOST(url);
+          log('  [view] + ' + fieldName);
+        } catch (e) {
+          log('  [view] ! ' + fieldName + ' -- ' + (e.message || 'failed'), 'error');
+        }
+      }
+
+      // -- State -----------------------------------------------------------
+      const siteApi = new SiteApi();
+      let scanResult = null; // { listName: { exists, fields, diff } }
+      let busy = false;
+
+      // -- DOM refs --------------------------------------------------------
+      const cardsEl = document.getElementById('list-cards');
+      const logEl = document.getElementById('log');
+      const scanTimeEl = document.getElementById('scan-time');
+      const btnScan = document.getElementById('btn-scan');
+      const btnFullSetup = document.getElementById('btn-full-setup');
+      const btnSyncAll = document.getElementById('btn-sync-all');
+
+      // -- Logging ---------------------------------------------------------
+      function log(msg, type = '') {
+        const span = document.createElement('span');
+        if (type) span.className = 'log-' + type;
+        span.textContent = msg + '\n';
+        logEl.appendChild(span);
+        logEl.scrollTop = logEl.scrollHeight;
+        // Auto-open log panel on first message
+        document.getElementById('log-panel').classList.add('open');
+      }
+
+      // -- Diff logic ------------------------------------------------------
+      function computeDiff(schemaFields, liveFields) {
+        const liveMap = new Map();
+        for (const f of liveFields) {
+          liveMap.set(f.InternalName, f);
+        }
+
+        const diff = [];
+
+        // Check schema fields against live
+        for (const sf of schemaFields) {
+          const live = liveMap.get(sf.title);
+          if (!live) {
+            diff.push({ field: sf.title, status: 'MISSING', schema: sf, live: null });
+          } else {
+            const expectedType = sf.multiline ? 3 : 2; // Note=3, Text=2
+            const expectedIndexed = sf.indexed || false;
+            if (live.Indexed !== expectedIndexed) {
+              diff.push({ field: sf.title, status: 'INDEX', schema: sf, live });
+            } else {
+              diff.push({ field: sf.title, status: 'OK', schema: sf, live });
+            }
+            liveMap.delete(sf.title);
+          }
+        }
+
+        // Remaining live fields not in schema (exclude built-ins)
+        for (const [name, f] of liveMap) {
+          if (!BUILTIN_FIELDS.has(name)) {
+            diff.push({ field: name, status: 'EXTRA', schema: null, live: f });
+          }
+        }
+
+        return diff;
+      }
+
+      function diffSummary(diff) {
+        const counts = { OK: 0, MISSING: 0, EXTRA: 0, INDEX: 0 };
+        for (const d of diff) counts[d.status]++;
+        const parts = [];
+        if (counts.OK) parts.push(counts.OK + ' OK');
+        if (counts.MISSING) parts.push(counts.MISSING + ' missing');
+        if (counts.EXTRA) parts.push(counts.EXTRA + ' extra');
+        if (counts.INDEX) parts.push(counts.INDEX + ' index mismatch');
+        return parts.join(' | ');
+      }
+
+      function hasIssues(diff) {
+        return diff.some(d => d.status !== 'OK');
+      }
+
+      // -- Scan ------------------------------------------------------------
+      async function scanSite() {
+        if (busy) return;
+        busy = true;
+        setBusy(true);
+        logEl.textContent = '';
+        log('Scanning site...', 'info');
+
+        scanResult = {};
+        let siteLists;
+
+        try {
+          siteLists = await siteApi.getLists();
+        } catch (e) {
+          log('Failed to fetch site lists: ' + e.message, 'error');
+          busy = false;
+          setBusy(false);
+          return;
+        }
+
+        const listTitles = new Set(siteLists.map(l => l.Title));
+
+        for (const listName of Object.keys(SCHEMA)) {
+          const exists = listTitles.has(listName);
+          scanResult[listName] = { exists, fields: [], diff: [] };
+
+          if (exists) {
+            try {
+              const listApi = siteApi.list(listName);
+              const liveFields = await listApi.getFields();
+              scanResult[listName].fields = liveFields;
+              scanResult[listName].diff = computeDiff(SCHEMA[listName], liveFields);
+              log(listName + ': ' + diffSummary(scanResult[listName].diff));
+            } catch (e) {
+              log(listName + ': failed to read fields -- ' + e.message, 'error');
+            }
+          } else {
+            // All schema fields are MISSING when list doesn't exist
+            scanResult[listName].diff = SCHEMA[listName].map(sf => ({
+              field: sf.title, status: 'MISSING', schema: sf, live: null,
+            }));
+            log(listName + ': list does not exist', 'info');
+          }
+        }
+
+        scanTimeEl.textContent = 'Last scan: ' + new Date().toLocaleTimeString();
+        log('Scan complete.', 'success');
+        renderCards();
+        updateGlobalButtons();
+
+        busy = false;
+        setBusy(false);
+      }
+
+      function updateGlobalButtons() {
+        if (!scanResult) return;
+        const hasMissingLists = Object.values(scanResult).some(r => !r.exists);
+        const hasMissingFields = Object.values(scanResult).some(r =>
+          r.diff.some(d => d.status === 'MISSING')
+        );
+        const hasIndexIssues = Object.values(scanResult).some(r =>
+          r.diff.some(d => d.status === 'INDEX')
+        );
+        btnFullSetup.disabled = !(hasMissingLists || hasMissingFields);
+        btnSyncAll.disabled = !(hasMissingFields || hasIndexIssues);
+      }
+
+      // -- Rendering -------------------------------------------------------
+      function renderCards() {
+        if (!scanResult) return;
+
+        let html = '';
+        for (const [listName, result] of Object.entries(scanResult)) {
+          const summary = result.exists
+            ? diffSummary(result.diff)
+            : 'List does not exist';
+          const statusClass = result.exists ? '' : ' badge-list-missing';
+          const listTag = result.exists
+            ? ''
+            : ' <span class="badge badge-list-missing">NOT FOUND</span>';
+
+          html += `<div class="list-card open" data-list="${listName}">
+            <div class="card-header">
+              <span class="toggle">&#9654;</span>
+              <span class="list-name">${listName}${listTag}</span>
+              <span class="summary">${summary}</span>
+              <span class="card-actions">`;
+
+          if (!result.exists) {
+            html += `<button class="btn btn-primary btn-sm" data-action="create-list" data-list="${listName}">Create List</button>`;
+          } else {
+            if (result.diff.some(d => d.status === 'MISSING' || d.status === 'INDEX')) {
+              html += `<button class="btn btn-primary btn-sm" data-action="sync-list" data-list="${listName}">Sync Fields</button>`;
+            }
+            html += `<button class="btn btn-danger btn-sm" data-action="delete-list" data-list="${listName}">Delete List</button>`;
+          }
+
+          html += `</span></div><div class="card-body">`;
+
+          if (result.exists && result.diff.length > 0) {
+            html += `<table class="field-table">
+              <thead><tr>
+                <th>Field</th><th>Type</th><th>Indexed</th><th>Status</th><th></th>
+              </tr></thead><tbody>`;
+
+            for (const d of result.diff) {
+              const typeName = d.schema
+                ? (d.schema.multiline ? 'Note' : 'Text')
+                : (d.live ? d.live.TypeAsString : '');
+              const indexed = d.schema
+                ? (d.schema.indexed ? 'Yes' : 'No')
+                : (d.live ? (d.live.Indexed ? 'Yes' : 'No') : '');
+              const badgeClass = {
+                OK: 'badge-ok', MISSING: 'badge-missing',
+                EXTRA: 'badge-extra', INDEX: 'badge-index',
+              }[d.status];
+              const badgeLabel = d.status === 'INDEX' ? 'INDEX MISMATCH' : d.status;
+
+              let actions = '';
+              if (d.status === 'MISSING') {
+                actions = `<button class="btn btn-primary btn-sm" data-action="create-field" data-list="${listName}" data-field="${d.field}">Create</button>`;
+              } else if (d.status === 'EXTRA') {
+                actions = `<button class="btn btn-danger btn-sm" data-action="delete-field" data-list="${listName}" data-field="${d.field}">Delete</button>`;
+              } else if (d.status === 'INDEX') {
+                actions = `<button class="btn btn-secondary btn-sm" data-action="fix-index" data-list="${listName}" data-field="${d.field}">Fix Index</button>`;
+              }
+
+              html += `<tr>
+                <td class="field-name">${d.field}</td>
+                <td class="field-type">${typeName}</td>
+                <td>${indexed}</td>
+                <td><span class="badge ${badgeClass}">${badgeLabel}</span></td>
+                <td class="field-actions">${actions}</td>
+              </tr>`;
+            }
+
+            html += '</tbody></table>';
+          } else if (!result.exists) {
+            html += `<table class="field-table">
+              <thead><tr><th>Field</th><th>Type</th><th>Indexed</th><th>Status</th><th></th></tr></thead><tbody>`;
+            for (const sf of SCHEMA[listName]) {
+              html += `<tr>
+                <td class="field-name">${sf.title}</td>
+                <td class="field-type">${sf.multiline ? 'Note' : 'Text'}</td>
+                <td>${sf.indexed ? 'Yes' : 'No'}</td>
+                <td><span class="badge badge-missing">MISSING</span></td>
+                <td></td>
+              </tr>`;
+            }
+            html += '</tbody></table>';
+          }
+
+          html += '</div></div>';
+        }
+
+        cardsEl.innerHTML = html;
+      }
+
+      function setBusy(state) {
+        btnScan.disabled = state;
+        btnScan.textContent = state ? 'Scanning...' : 'Scan Site';
+      }
+
+      function setButtonBusy(btn, label) {
+        btn.disabled = true;
+        btn.dataset.origLabel = btn.textContent;
+        btn.textContent = label;
+      }
+
+      function resetButton(btn) {
+        btn.disabled = false;
+        btn.textContent = btn.dataset.origLabel || btn.textContent;
+      }
+
+      // -- Actions ---------------------------------------------------------
+      async function createList(listName) {
+        log('Creating list: ' + listName + '...', 'info');
+        try {
+          await siteApi.createList(listName);
+          log('Created list: ' + listName, 'success');
+
+          // Create all fields
+          const listApi = siteApi.list(listName);
+          const createdFields = [];
+          for (const sf of SCHEMA[listName]) {
+            try {
+              await listApi.createField(sf);
+              log('  + ' + sf.title + (sf.indexed ? ' (indexed)' : '') + (sf.multiline ? ' (Note)' : ''));
+              createdFields.push(sf.title);
+            } catch (e) {
+              log('  ! ' + sf.title + ' -- ' + (e.message || 'failed'), 'error');
+            }
+          }
+
+          // Add created fields to default view
+          if (createdFields.length > 0) {
+            log('Updating default view...', 'info');
+            for (const fieldName of createdFields) {
+              await addFieldToView(listName, fieldName);
+            }
+          }
+        } catch (e) {
+          log('Failed to create list ' + listName + ': ' + e.message, 'error');
+        }
+      }
+
+      async function deleteList(listName) {
+        log('Deleting list: ' + listName + '...', 'info');
+        try {
+          await siteApi.deleteList(listName);
+          log('Deleted list: ' + listName, 'success');
+        } catch (e) {
+          log('Failed to delete list ' + listName + ': ' + e.message, 'error');
+        }
+      }
+
+      async function createField(listName, fieldName) {
+        const sf = SCHEMA[listName].find(f => f.title === fieldName);
+        if (!sf) { log('Field ' + fieldName + ' not found in schema', 'error'); return; }
+        const listApi = siteApi.list(listName);
+        log('Creating field: ' + listName + '.' + fieldName + '...', 'info');
+        try {
+          await listApi.createField(sf);
+          log('Created field: ' + listName + '.' + fieldName, 'success');
+          await addFieldToView(listName, fieldName);
+        } catch (e) {
+          log('Failed to create field ' + fieldName + ': ' + e.message, 'error');
+        }
+      }
+
+      async function deleteField(listName, fieldName) {
+        const listApi = siteApi.list(listName);
+        log('Deleting field: ' + listName + '.' + fieldName + '...', 'info');
+        try {
+          await listApi.deleteField(fieldName);
+          log('Deleted field: ' + listName + '.' + fieldName, 'success');
+        } catch (e) {
+          log('Failed to delete field ' + fieldName + ': ' + e.message, 'error');
+        }
+      }
+
+      async function fixIndex(listName, fieldName) {
+        const sf = SCHEMA[listName].find(f => f.title === fieldName);
+        if (!sf) { log('Field ' + fieldName + ' not found in schema', 'error'); return; }
+        const listApi = siteApi.list(listName);
+        const targetIndexed = sf.indexed || false;
+        log('Setting ' + listName + '.' + fieldName + ' indexed=' + targetIndexed + '...', 'info');
+        try {
+          await listApi.setFieldIndexed(fieldName, targetIndexed);
+          log('Fixed index: ' + listName + '.' + fieldName, 'success');
+        } catch (e) {
+          log('Failed to fix index ' + fieldName + ': ' + e.message, 'error');
+        }
+      }
+
+      async function syncList(listName) {
+        const result = scanResult[listName];
+        if (!result || !result.exists) return;
+        log('Syncing fields for ' + listName + '...', 'info');
+        for (const d of result.diff) {
+          if (d.status === 'MISSING') await createField(listName, d.field);
+          if (d.status === 'INDEX') await fixIndex(listName, d.field);
+        }
+        log('Sync complete for ' + listName, 'success');
+      }
+
+      async function fullSetup() {
+        if (busy) return;
+        busy = true;
+        setBusy(true);
+        log('--- Full Setup ---', 'info');
+
+        for (const listName of Object.keys(SCHEMA)) {
+          const result = scanResult[listName];
+          if (!result.exists) {
+            await createList(listName);
+          } else {
+            for (const d of result.diff) {
+              if (d.status === 'MISSING') await createField(listName, d.field);
+            }
+          }
+        }
+
+        log('Full setup complete. Re-scanning...', 'success');
+        busy = false;
+        await scanSite();
+      }
+
+      async function syncAll() {
+        if (busy) return;
+        busy = true;
+        setBusy(true);
+        log('--- Sync All ---', 'info');
+
+        for (const listName of Object.keys(SCHEMA)) {
+          const result = scanResult[listName];
+          if (!result || !result.exists) continue;
+          await syncList(listName);
+        }
+
+        log('Sync all complete. Re-scanning...', 'success');
+        busy = false;
+        await scanSite();
+      }
+
+      // -- Event delegation ------------------------------------------------
+      cardsEl.addEventListener('click', async (e) => {
+        // Card header toggle
+        const header = e.target.closest('.card-header');
+        if (header && !e.target.closest('button')) {
+          header.closest('.list-card').classList.toggle('open');
+          return;
+        }
+
+        // Action buttons
+        const btn = e.target.closest('button[data-action]');
+        if (!btn || busy) return;
+
+        const action = btn.dataset.action;
+        const listName = btn.dataset.list;
+        const fieldName = btn.dataset.field;
+
+        // Confirm destructive actions
+        if (action === 'delete-list') {
+          if (!window.confirm('Delete list "' + listName + '" and all its data?')) return;
+        }
+        if (action === 'delete-field') {
+          if (!window.confirm('Delete field "' + fieldName + '" from "' + listName + '"?')) return;
+        }
+
+        busy = true;
+        setButtonBusy(btn, '...');
+
+        if (action === 'create-list') {
+          await createList(listName);
+          busy = false;
+          await scanSite();
+        } else if (action === 'delete-list') {
+          await deleteList(listName);
+          busy = false;
+          await scanSite();
+        } else if (action === 'sync-list') {
+          await syncList(listName);
+          busy = false;
+          await scanSite();
+        } else {
+          // Field-level ops: update diff in-place, no network rescan
+          if (action === 'create-field') {
+            await createField(listName, fieldName);
+            const d = scanResult[listName]?.diff.find(e => e.field === fieldName);
+            if (d) d.status = 'OK';
+          } else if (action === 'delete-field') {
+            await deleteField(listName, fieldName);
+            if (scanResult[listName]) {
+              scanResult[listName].diff = scanResult[listName].diff.filter(e => e.field !== fieldName);
+            }
+          } else if (action === 'fix-index') {
+            await fixIndex(listName, fieldName);
+            const d = scanResult[listName]?.diff.find(e => e.field === fieldName);
+            if (d) d.status = 'OK';
+          }
+          busy = false;
+          renderCards();
+          updateGlobalButtons();
+        }
+      });
+
+      // Global buttons
+      btnScan.addEventListener('click', scanSite);
+      btnFullSetup.addEventListener('click', fullSetup);
+      btnSyncAll.addEventListener('click', syncAll);
+
+      // Log toggle
+      document.getElementById('log-toggle').addEventListener('click', () => {
+        document.getElementById('log-panel').classList.toggle('open');
+      });
+    </script>
+  </body>
+</html>
